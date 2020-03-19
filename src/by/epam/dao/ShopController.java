@@ -19,7 +19,7 @@ public class ShopController {
 
     public ArrayList<Shop> readAll() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data/Shop.txt"))) {
-            ArrayList<Shop> shops = new ArrayList<Shop>();
+            ArrayList<Shop> shops = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
                 StringTokenizer st = new StringTokenizer(buffer, "-");
@@ -35,6 +35,10 @@ public class ShopController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void deleteByName(String name){
+        // TODO: 19.03.2020 create delete method
     }
 
     public void writeAll(ArrayList<Shop> shops) {
