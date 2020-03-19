@@ -37,7 +37,7 @@ public class ShopController {
         return null;
     }
 
-    public void deleteByName(String name){
+    public void deleteByName(String name,ArrayList<Shop> shops){
         // TODO: 19.03.2020 create delete method
     }
 
