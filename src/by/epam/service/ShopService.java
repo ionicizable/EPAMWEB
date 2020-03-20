@@ -2,6 +2,8 @@ package by.epam.service;
 
 import by.epam.dao.ShopDao;
 import by.epam.entities.Shop;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
@@ -33,11 +35,14 @@ public class ShopService {
     }
 
     public void Delete(int id, String name) {
+        Logger log = LogManager.getLogger();
         Shop shop = ReadShop(id);
         if(shop.getName().equals(name)){
             shopDao.delete(id);
+            log.info("Shop deleted");
         } else {
-            throw new IllegalArgumentException("Контрольное имя неверно");
+            log.error("Wrong control name");
+            throw new IllegalArgumentException("");
         }
     }
 }

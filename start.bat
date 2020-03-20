@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk-13.0.2\bin\java.exe" "-javaagent:E:\programms\IntelliJ IDEA 2019.3.3\lib\idea_rt.jar=51289:E:\programms\IntelliJ IDEA 2019.3.3\bin" -Dfile.encoding=UTF-8 -classpath E:\projects\2kJava\EPAMWEB\out\production\EPAMweb by.epam.Main

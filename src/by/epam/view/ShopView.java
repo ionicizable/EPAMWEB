@@ -3,6 +3,8 @@ package by.epam.view;
 import by.epam.dao.ShopDao;
 import by.epam.entities.Shop;
 import by.epam.service.ShopService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -22,6 +24,7 @@ public class ShopView {
     }
 
     public void Start() {
+        Logger log = LogManager.getLogger();
         while (true) {
             showMenu();
             int check = readerInt();
@@ -34,9 +37,11 @@ public class ShopView {
                     break;
                 case (menuUpdate):
                     updateShop();
+                    log.info("Shop updated");
                     break;
                 case (menuDelete):
                     deleteShop();
+                    log.info("Shop deleted");
                 default:
                     System.out.println("Нет такого пункта");
                     break;
@@ -88,12 +93,13 @@ public class ShopView {
     }
 
     private boolean readShop(int id) {
+        Logger log = LogManager.getLogger();
         try {
             Shop shop = shopService.ReadShop(id);
             System.out.println(shop.toStringFile());
             return true;
         } catch (Exception e) {
-            System.out.println(String.format("Ошибка %s", e.getMessage()));
+            log.error(String.format("Ошибка %s", e.getMessage()));
             return false;
         }
     }
@@ -107,11 +113,13 @@ public class ShopView {
     }
 
     private void readAllShops() {
+        Logger log = LogManager.getLogger();
         ArrayList<Shop> shops = shopService.ReadAll();
         for (Shop shop : shops
         ) {
             System.out.println(shop.toStringFile());
         }
+        log.info("Shop list reviewed");
     }
 
     public int readerInt() {
