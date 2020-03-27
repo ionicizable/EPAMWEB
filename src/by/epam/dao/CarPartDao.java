@@ -1,6 +1,8 @@
 package by.epam.dao;
 
 import by.epam.entities.CarPart;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,11 +12,14 @@ public class CarPartDao {
     private ObjectOutputStream outputStream;
 
     public void create(CarPart carPart) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/CarPart.txt", true))) {
-            writer.write(carPart.toStringFile());
-            writer.newLine();
-        } catch (IOException ignored) {
-        }
+        Logger log = LogManager.getLogger();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/CarPart.txt", true))) {
+                writer.write(carPart.toStringFile());
+                writer.newLine();
+                log.info("Shop Created");
+            } catch (IOException ignored) {
+                log.error("Creation error");
+            }
     }
 
     public ArrayList<CarPart> readAll() {

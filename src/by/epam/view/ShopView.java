@@ -60,16 +60,14 @@ public class ShopView {
             shopService.Delete(id, name);
         }
         catch (Exception e){
-            System.out.println("Неверные данные");
+            System.out.println("Неверно введенные данные");
         }
     }
 
     private void updateShop() {
         System.out.println("Введите номер изменяемого магазина:");
         int id = readerInt();
-        if (!readShop(id)) {
-            return;
-        }
+        if (!readShop(id)) { return; }
         try {
             System.out.println("Введите новые данные магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
             String buffer = readerString();
@@ -82,7 +80,7 @@ public class ShopView {
             Shop shop = new Shop(id, name, address, contact, worktime, description);
             shopService.Update(id, shop);
         } catch (Exception e) {
-            System.out.println("Неверные данные");
+            System.out.println("Неверно введенные данные");
         }
 
     }
@@ -118,7 +116,7 @@ public class ShopView {
 
 
     private void showMenu() {
-        System.out.println(String.format("Введите %d  чтобы показать все магазины,", menuReadAll));
+        System.out.println(String.format("Введите %d  чтобы показать все магазины", menuReadAll));
         System.out.println(String.format("Введите %d  чтобы создать новый магазин", menuCreate));
         System.out.println(String.format("Введите %d  чтобы изменить данные магазина", menuUpdate));
         System.out.println(String.format("Введите %d  чтобы удалить магазин", menuDelete));
