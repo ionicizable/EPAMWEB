@@ -2,6 +2,8 @@ package by.epam.view;
 
 import by.epam.entities.CarPart;
 import by.epam.service.CarPartService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -21,23 +23,29 @@ public class CarPartView {
 
     public void Start() {
         while (true) {
-            showMenu();
-            int check = readerInt();
-            switch (check) {
-                case (menuReadAll):
-                    readAllCarParts();
-                    break;
-                case (menuCreate):
-                    createCarPart();
-                    break;
-                case (menuUpdate):
-                    updateCarPart();
-                    break;
-                case (menuDelete):
-                    deleteCarPart();
-                default:
-                    System.out.println("Нет такого пункта");
-                    break;
+            try {
+                showMenu();
+                int check = readerInt();
+                switch (check) {
+                    case (menuReadAll):
+                        readAllCarParts();
+                        break;
+                    case (menuCreate):
+                        createCarPart();
+                        break;
+                    case (menuUpdate):
+                        updateCarPart();
+                        break;
+                    case (menuDelete):
+                        deleteCarPart();
+                        break;
+                    default:
+                        System.out.println("Нет такого пункта");
+                        break;
+                }
+            }
+             catch (Exception e) {
+                System.out.println("Неверно введенные данные");
             }
         }
     }
@@ -45,9 +53,13 @@ public class CarPartView {
     private void deleteCarPart() {
         System.out.println("Введите номер удаляемой запчасти:");
         int id = readerInt();
-        System.out.println("Введите название удаляемой запчасти:");
+        try { System.out.println("Введите название удаляемой запчасти:");
         String name = readerString();
         carPartService.Delete(id,name);
+        }
+        catch (Exception e) {
+            System.out.println("Неверно введенные данные");
+        }
     }
 
     private void updateCarPart() {
@@ -65,20 +77,24 @@ public class CarPartView {
             String CarId = st.nextToken();
             CarPart carPart = new CarPart(id, name, description,CarId);
             carPartService.Update(id, carPart);
-        } catch (Exception e) {
-            System.out.println("Неверные данные");
         }
-
+        catch (Exception e) {
+            System.out.println("Неверно введенные данные");
+        }
     }
 
     private void createCarPart() {
-        System.out.println("Введите данные новой запчасти в формате Имя-Описание-Автомобиль:");
-        String buffer = readerString();
-        StringTokenizer st = new StringTokenizer(buffer, "-");
-        String name = st.nextToken();
-        String description = st.nextToken();
-        String CarId = st.nextToken();
-        carPartService.Create(new CarPart(0, name, description,CarId));
+        try {
+            System.out.println("Введите данные новой запчасти в формате Имя-Описание-Автомобиль:");
+            String buffer = readerString();
+            StringTokenizer st = new StringTokenizer(buffer, "-");
+            String name = st.nextToken();
+            String description = st.nextToken();
+            String CarId = st.nextToken();
+            carPartService.Create(new CarPart(0, name, description, CarId));
+        } catch (Exception e) {
+            System.out.println("Неверно введенные данные");
+        }
     }
 
     private boolean readCarPart(int id) {
@@ -101,11 +117,13 @@ public class CarPartView {
     }
 
     private void readAllCarParts() {
+        Logger log = LogManager.getLogger();
         ArrayList<CarPart> carParts = carPartService.ReadAll();
         for (CarPart carPart : carParts
         ) {
             System.out.println(carPart.toStringFile());
         }
+        log.info("CarPart list reviewed");
     }
 
     public int readerInt() {

@@ -2,6 +2,8 @@ package by.epam.service;
 
 import by.epam.dao.CarPartDao;
 import by.epam.entities.CarPart;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
@@ -33,11 +35,14 @@ public class CarPartService {
     }
 
     public void Delete(int id, String name) {
+        Logger log = LogManager.getLogger();
         CarPart carPart = ReadCarPart(id);
         if(carPart.getName().equals(name)){
             carPartDao.delete(id);
+            log.info("CarPart deleted");
         } else {
-            throw new IllegalArgumentException("Контрольное имя неверно");
+            log.error("Wrong control name");
+            throw new IllegalArgumentException("");
         }
     }
 }
