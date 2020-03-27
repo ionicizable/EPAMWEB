@@ -16,7 +16,7 @@ public class CarPartDao {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/CarPart.txt", true))) {
                 writer.write(carPart.toStringFile());
                 writer.newLine();
-                log.info("Shop Created");
+                log.info("CarPart Created");
             } catch (IOException ignored) {
                 log.error("Creation error");
             }
