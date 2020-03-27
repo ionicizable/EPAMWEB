@@ -1,6 +1,5 @@
 package by.epam.view;
 
-import by.epam.dao.ShopDao;
 import by.epam.entities.Shop;
 import by.epam.service.ShopService;
 import org.apache.logging.log4j.LogManager;
@@ -27,25 +26,31 @@ public class ShopView {
     public void Start() {
         Logger log = LogManager.getLogger();
         while (true) {
-            showMenu();
-            int check = readerInt();
-            switch (check) {
-                case (menuReadAll):
-                    readAllShops();
-                    break;
-                case (menuCreate):
-                    createShop();
-                    break;
-                case (menuUpdate):
-                    updateShop();
-                    log.info("Shop updated");
-                    break;
-                case (menuDelete):
-                    deleteShop();
-                    log.info("Shop deleted");
-                default:
-                    System.out.println("Нет такого пункта");
-                    break;
+            try {
+                showMenu();
+                int check = readerInt();
+                switch (check) {
+                    case (menuReadAll):
+                        readAllShops();
+                        break;
+                    case (menuCreate):
+                        createShop();
+                        break;
+                    case (menuUpdate):
+                        updateShop();
+                        log.info("Shop updated");
+                        break;
+                    case (menuDelete):
+                        deleteShop();
+                        log.info("Shop deleted");
+                        break;
+                    default:
+                        System.out.println("Нет такого пункта");
+                        break;
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Неверно введенные данные");
             }
         }
     }
@@ -53,9 +58,8 @@ public class ShopView {
     private void deleteShop() {
         System.out.println("Введите номер удаляемого магазина:");
         int id = readerInt();
-        if (!readShop(id)) { return; }
-        try {
-            System.out.println("Введите название удаляемого магазина:");
+        if (readShop(id)) { return; }
+        try {System.out.println("Введите название удаляемого магазина:");
             String name = readerString();
             shopService.Delete(id, name);
         }
@@ -67,9 +71,8 @@ public class ShopView {
     private void updateShop() {
         System.out.println("Введите номер изменяемого магазина:");
         int id = readerInt();
-        if (!readShop(id)) { return; }
-        try {
-            System.out.println("Введите новые данные магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
+        if (readShop(id)) { return; }
+        try { System.out.println("Введите новые данные магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
             String buffer = readerString();
             StringTokenizer st = new StringTokenizer(buffer, "-");
             String name = st.nextToken();
@@ -79,10 +82,11 @@ public class ShopView {
             String description = st.nextToken();
             Shop shop = new Shop(id, name, address, contact, worktime, description);
             shopService.Update(id, shop);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             System.out.println("Неверно введенные данные");
         }
-
     }
 
     private void createShop() {
@@ -107,10 +111,11 @@ public class ShopView {
         try {
             Shop shop = shopService.ReadShop(id);
             System.out.println(shop.toStringFile());
-            return true;
-        } catch (Exception e) {
-            log.error(String.format("Ошибка %s", e.getMessage()));
             return false;
+        } catch (Exception e) {
+            System.out.println("Неверно введенные данные");
+            log.error(String.format("Ошибка %s", e.getMessage()));
+            return true;
         }
     }
 
