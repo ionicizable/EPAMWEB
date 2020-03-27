@@ -12,7 +12,8 @@ public class Main {
 
         CarPartView cview = new CarPartView();
 
-        while (true) {
+        try {while (true) {
+
             System.out.println("1.Магазины 2.Запчасти");
             int check = readerInt();
             switch (check) {
@@ -23,9 +24,14 @@ public class Main {
                     cview.Start();
                     break;
                 default:
-                System.out.println("Нет такого пункта");
-                break;
+                    System.out.println("Нет такого пункта");
+                    break;
             }
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("Неверные данные");
         }
     }
 

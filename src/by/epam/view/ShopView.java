@@ -23,6 +23,7 @@ public class ShopView {
         shopService = new ShopService();
     }
 
+
     public void Start() {
         Logger log = LogManager.getLogger();
         while (true) {
@@ -52,9 +53,15 @@ public class ShopView {
     private void deleteShop() {
         System.out.println("Введите номер удаляемого магазина:");
         int id = readerInt();
-        System.out.println("Введите название удаляемого магазина:");
-        String name = readerString();
-        shopService.Delete(id,name);
+        if (!readShop(id)) { return; }
+        try {
+            System.out.println("Введите название удаляемого магазина:");
+            String name = readerString();
+            shopService.Delete(id, name);
+        }
+        catch (Exception e){
+            System.out.println("Неверные данные");
+        }
     }
 
     private void updateShop() {
@@ -81,15 +88,20 @@ public class ShopView {
     }
 
     private void createShop() {
-        System.out.println("Введите данные нового магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
-        String buffer = readerString();
-        StringTokenizer st = new StringTokenizer(buffer, "-");
-        String name = st.nextToken();
-        String address = st.nextToken();
-        String contact = st.nextToken();
-        String worktime = st.nextToken();
-        String description = st.nextToken();
-        shopService.Create(new Shop(0, name, address, contact, worktime, description));
+        try {
+            System.out.println("Введите данные нового магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
+            String buffer = readerString();
+            StringTokenizer st = new StringTokenizer(buffer, "-");
+            String name = st.nextToken();
+            String address = st.nextToken();
+            String contact = st.nextToken();
+            String worktime = st.nextToken();
+            String description = st.nextToken();
+            shopService.Create(new Shop(0, name, address, contact, worktime, description));
+        }
+        catch (Exception e){
+            System.out.println("Неверно введенные данные");
+        }
     }
 
     private boolean readShop(int id) {
