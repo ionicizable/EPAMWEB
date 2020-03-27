@@ -1,6 +1,5 @@
 package by.epam.view;
 
-import by.epam.dao.ShopDao;
 import by.epam.entities.Shop;
 import by.epam.service.ShopService;
 import org.apache.logging.log4j.LogManager;
@@ -54,7 +53,7 @@ public class ShopView {
         int id = readerInt();
         System.out.println("Введите название удаляемого магазина:");
         String name = readerString();
-        shopService.Delete(id,name);
+        shopService.delete(id,name);
     }
 
     private void updateShop() {
@@ -73,7 +72,7 @@ public class ShopView {
             String worktime = st.nextToken();
             String description = st.nextToken();
             Shop shop = new Shop(id, name, address, contact, worktime, description);
-            shopService.Update(id, shop);
+            shopService.update(id, shop);
         } catch (Exception e) {
             System.out.println("Неверные данные");
         }
@@ -89,13 +88,13 @@ public class ShopView {
         String contact = st.nextToken();
         String worktime = st.nextToken();
         String description = st.nextToken();
-        shopService.Create(new Shop(0, name, address, contact, worktime, description));
+        shopService.create(new Shop(0, name, address, contact, worktime, description));
     }
 
     private boolean readShop(int id) {
         Logger log = LogManager.getLogger();
         try {
-            Shop shop = shopService.ReadShop(id);
+            Shop shop = shopService.readShop(id);
             System.out.println(shop.toStringFile());
             return true;
         } catch (Exception e) {
@@ -114,7 +113,7 @@ public class ShopView {
 
     private void readAllShops() {
         Logger log = LogManager.getLogger();
-        ArrayList<Shop> shops = shopService.ReadAll();
+        ArrayList<Shop> shops = shopService.readAll();
         for (Shop shop : shops
         ) {
             System.out.println(shop.toStringFile());

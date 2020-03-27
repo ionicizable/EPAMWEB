@@ -1,6 +1,7 @@
 package by.epam.dao;
 
 import by.epam.entities.CarPart;
+import by.epam.utility;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class CarPartDao {
             ArrayList<CarPart> carParts = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, "-");
+                StringTokenizer st = new StringTokenizer(buffer, utility.valueSeparator);
                 int id = Integer.parseInt(st.nextToken());
                 String name = st.nextToken();
                 String description = st.nextToken();
@@ -44,7 +45,7 @@ public class CarPartDao {
     public void writeAll(ArrayList<CarPart> carParts) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "CarPart.txt")))) {
             for (CarPart carPart : carParts) {
-                String temp = "-";
+                String temp = utility.valueSeparator;
                 writer.write(Integer.toString(carPart.getId()));
                 writer.write(temp);
                 writer.write(carPart.getName());

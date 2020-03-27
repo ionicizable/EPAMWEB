@@ -1,5 +1,7 @@
 package by.epam.entities;
 
+import by.epam.utility;
+
 public class CarPart {
     private int id;
     private String name;
@@ -23,7 +25,7 @@ public class CarPart {
     public void setCarId(String carId) { CarId = carId; }
 
     public String toStringFile(){
-        String temp = "-";
+        String temp = utility.valueSeparator;
         return id + temp + name + temp + description + temp + CarId;
     }
 

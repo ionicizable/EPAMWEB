@@ -13,7 +13,7 @@ public class CarPartService {
        carPartDao = new CarPartDao();
     }
 
-    public ArrayList<CarPart> ReadAll() {
+    public ArrayList<CarPart> readAll() {
         ArrayList<CarPart> carParts = carPartDao.readAll();
         return carParts;
     }

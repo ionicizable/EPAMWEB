@@ -1,6 +1,7 @@
 package by.epam.dao;
 
 import by.epam.entities.Shop;
+import by.epam.utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class ShopDao {
             ArrayList<Shop> shops = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, "-");
+                StringTokenizer st = new StringTokenizer(buffer, utility.valueSeparator);
                 int id = Integer.parseInt(st.nextToken());
                 String name = st.nextToken();
                 String address = st.nextToken();
@@ -51,18 +52,8 @@ public class ShopDao {
     public void writeAll(ArrayList<Shop> shops) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "Shop.txt")))) {
             for (Shop shop : shops) {
-                String temp = "-";
-                writer.write(Integer.toString(shop.getId()));
-                writer.write(temp);
-                writer.write(shop.getName());
-                writer.write(temp);
-                writer.write(shop.getAddress());
-                writer.write(temp);
-                writer.write(shop.getContact());
-                writer.write(temp);
-                writer.write(shop.getWorktime());
-                writer.write(temp);
-                writer.write(shop.getDescription());
+                String temp = utility.valueSeparator;
+                writer.write(shop.toStringFile());
                 writer.write("\n");
             }
         } catch (IOException e) {

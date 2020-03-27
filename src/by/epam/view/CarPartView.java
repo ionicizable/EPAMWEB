@@ -101,7 +101,7 @@ public class CarPartView {
     }
 
     private void readAllCarParts() {
-        ArrayList<CarPart> carParts = carPartService.ReadAll();
+        ArrayList<CarPart> carParts = carPartService.readAll();
         for (CarPart carPart : carParts
         ) {
             System.out.println(carPart.toStringFile());
