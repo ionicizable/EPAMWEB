@@ -1,18 +1,42 @@
 package by.epam;
 
-import by.epam.dao.ShopDao;
-import by.epam.entities.Shop;
-import by.epam.service.ShopService;
+import by.epam.view.CarPartView;
 import by.epam.view.ShopView;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        ShopView view = new ShopView();
-        view.Start();
+        ShopView sview = new ShopView();
+
+        CarPartView cview = new CarPartView();
+
+        while (true) {
+            System.out.println("1.Магазины 2.Запчасти");
+            int check = readerInt();
+            switch (check) {
+                case (1):
+                    sview.Start();
+                    break;
+                case (2):
+                    cview.Start();
+                    break;
+                default:
+                System.out.println("Нет такого пункта");
+                break;
+            }
+        }
     }
 
+    public static int readerInt() {
+        Scanner sc = new Scanner(System.in);
+        int tmp = sc.nextInt();
+        return tmp;
+    }
 }
+
+
+
+
 

@@ -1,6 +1,8 @@
 package by.epam.dao;
 
 import by.epam.entities.Shop;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,10 +12,13 @@ public class ShopDao {
     private ObjectOutputStream outputStream;
 
     public void create(Shop shop) {
+        Logger log = LogManager.getLogger();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/Shop.txt", true))) {
             writer.write(shop.toStringFile());
             writer.newLine();
+            log.info("Shop Created");
         } catch (IOException ignored) {
+            log.error("Creation error");
         }
     }
 
