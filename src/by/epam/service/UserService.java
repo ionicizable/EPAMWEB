@@ -25,15 +25,12 @@ public class UserService {
         user.setId(newId);
         userDao.create(user);
     }
-
-    public void Update(int id, User newUser) {
-        userDao.Update(id, newUser);
-    }
-
     public User ReadUser(int id) {
         return userDao.readUser(id);
     }
-
+    public void Update(int id, User newUser) {
+        userDao.Update(id, newUser);
+    }
     public void Delete(int id, String Username, String Password ) {
         Logger log = LogManager.getLogger();
         User user = ReadUser(id);

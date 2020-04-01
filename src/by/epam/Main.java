@@ -1,7 +1,5 @@
 package by.epam;
 
-import by.epam.view.CarPartView;
-import by.epam.view.ShopView;
 import by.epam.view.AdminView;
 import by.epam.view.UserView;
 
@@ -10,12 +8,11 @@ import java.text.ParseException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException, ParseException {
-        ShopView sview = new ShopView();
-        CarPartView cview = new CarPartView();
+    public static void main(String[] args) {
         UserView uview = new UserView();
         AdminView aview = new AdminView();
-        while (true) {
+        while (true)
+        try{
             System.out.println("1.Пользователь 2.Администратор");
             int validation = readerInt();
             switch (validation) {
@@ -29,23 +26,9 @@ public class Main {
                     System.out.println("Нет такого пункта");
                     break;
             }
-            while (true) {
-                System.out.println("1.Магазины 2.Запчасти 3.Заказы");
-                int check = readerInt();
-                switch (check) {
-                    case (1):
-                        sview.Start();
-                        break;
-                    case (2):
-                        cview.Start();
-                        break;
-                    default:
-                        System.out.println("Нет такого пункта");
-                        break;
-                }
-            }
-        }
 
+        }
+catch (Exception e){System.out.println("Неверно введенные данные");}
     }
     public static int readerInt() {
         Scanner sc = new Scanner(System.in);
