@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OrderView {
-    private final int menuReadAll = 1;
-    private final int menuCreate = 2;
+    private final int menuReadAll = 2;
+    private final int menuCreate = 1;
     private final int menuDelete = 3;
 
     private OrderService orderService;
@@ -30,25 +30,24 @@ public class OrderView {
         orderService = new OrderService(shopService,carPartService);
     }
 
-    public void Start() throws ParseException {
+    public void Start(boolean isAdmin) throws ParseException {
         Logger log = LogManager.getLogger();
         while (true) {
-            showMenu();
+            showMenu(isAdmin);
             int check = readerInt();
-            switch (check) {
-                case (menuReadAll):
-                    readAllOrders();
-                    break;
-                case (menuCreate):
-                    createOrder();
-                    break;
-                case (menuDelete):
-                    deleteOrder();
-                    log.info("Order deleted");
-                default:
-                    System.out.println("Нет такого пункта");
-                    break;
+            if (check == menuReadAll && isAdmin) {
+                readAllOrders();
+                continue;
             }
+            if (check == menuCreate) {
+                createOrder();
+                continue;
+            }
+            if (check == menuDelete && isAdmin) {
+                deleteOrder();
+                continue;
+            }
+            System.out.println("Нет такого пункта");
         }
     }
 
@@ -59,24 +58,29 @@ public class OrderView {
     }
 
     private void createOrder() throws ParseException {
-        CarPartService carPartService = new CarPartService();
-        ShopService shopService = new ShopService();
-        System.out.println("Выберите, какую деталь вы хотите заказать:");
-        ArrayList<CarPart> carParts = carPartService.readAll();
-        for (CarPart carPart : carParts
-        ) {
-            System.out.println(carPart.toStringFile());
-        }
-        int carPartId = readerInt();
-        System.out.println("Выберите,  из какого магазина вы хотите заказать:");
-        ArrayList<Shop> shops = shopService.readAll();
-        for (Shop shop : shops
-        ) {
-            System.out.println(shop.toStringFile());
-        }
+        try {
+            CarPartService carPartService = new CarPartService();
+            ShopService shopService = new ShopService();
+            System.out.println("Выберите, какую деталь вы хотите заказать:");
+            ArrayList<CarPart> carParts = carPartService.readAll();
+            for (CarPart carPart : carParts
+            ) {
+                System.out.println(carPart.toStringFile());
+            }
+            int carPartId = readerInt();
+            System.out.println("Выберите,  из какого магазина вы хотите заказать:");
+            ArrayList<Shop> shops = shopService.readAll();
+            for (Shop shop : shops
+            ) {
+                System.out.println(shop.toStringFile());
+            }
 
-        int shopId = readerInt();
-        orderService.create(new Order(0,carPartId,shopId,"00000000"));
+            int shopId = readerInt();
+            orderService.create(new Order(0, carPartId, shopId, "00000000"));
+        }catch (Exception e){
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+        }
     }
 
     private boolean readOrder(int id) {
@@ -92,10 +96,13 @@ public class OrderView {
     }
 
 
-    private void showMenu() {
-        System.out.println(String.format("Введите %d  чтобы показать все заказы", menuReadAll));
+    private void showMenu(boolean isAdmin) {
         System.out.println(String.format("Введите %d  чтобы создать новый заказ", menuCreate));
-        System.out.println(String.format("Введите %d  чтобы удалить заказ", menuDelete));
+        if (isAdmin){
+            System.out.println(String.format("Введите %d  чтобы показать все заказы", menuReadAll));
+            System.out.println(String.format("Введите %d  чтобы удалить заказ", menuDelete));
+        }
+
     }
 
     private void readAllOrders() throws ParseException {

@@ -54,7 +54,7 @@ public class OrderService {
     private Order fill(OrderData input) throws ParseException {
         Order order = new Order(input.getId(), input.getCarPartId(), input.getShopId(), input.getDateString());
         order.setShop(shopService.readShop(input.getShopId()));
-        order.setCarPart(carPartService.ReadCarPart(input.getCarPartId()));
+        order.setCarPart(carPartService.readCarPart(input.getCarPartId()));
         return order;
     }
 }

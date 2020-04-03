@@ -33,8 +33,7 @@ public class OrderDao {
                 orders.add(new OrderData(id, carPartId, shopId, date));
             }
             return orders;
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
+        } catch (IOException | ParseException ignored) {
         }
         return null;
     }
@@ -50,8 +49,7 @@ public class OrderDao {
                 writer.write(order.toStringFile());
                 writer.write("\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 

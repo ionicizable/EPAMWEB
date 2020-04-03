@@ -38,15 +38,13 @@ public class ShopDao {
                 shops.add(new Shop(id, name, address, contact, worktime, description));
             }
             return shops;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return null;
     }
 
     public void deleteByName(String name, ArrayList<Shop> shops) {
         // TODO: 19.03.2020 create delete method
-
     }
 
     public void writeAll(ArrayList<Shop> shops) {
@@ -56,8 +54,7 @@ public class ShopDao {
                 writer.write(shop.toStringFile());
                 writer.write("\n");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
@@ -72,7 +69,7 @@ public class ShopDao {
         return result;
     }
 
-    public void Update(int id, Shop newShop) {
+    public void update(int id, Shop newShop) {
         ArrayList<Shop> shops = readAll();
         for (Shop shop : shops) {
             if (id == shop.getId()) {

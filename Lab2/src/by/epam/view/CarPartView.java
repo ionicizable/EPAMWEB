@@ -19,26 +19,27 @@ public class CarPartView {
     public CarPartView() { carPartService = new CarPartService();
     }
 
-    public void Start() {
+    public void Start(boolean isAdmin) {
         while (true) {
-            showMenu();
+            showMenu(isAdmin);
             int check = readerInt();
-            switch (check) {
-                case (menuReadAll):
-                    readAllCarParts();
-                    break;
-                case (menuCreate):
-                    createCarPart();
-                    break;
-                case (menuUpdate):
-                    updateCarPart();
-                    break;
-                case (menuDelete):
-                    deleteCarPart();
-                default:
-                    System.out.println("Нет такого пункта");
-                    break;
+            if (check == menuReadAll) {
+                readAllCarParts();
+                continue;
             }
+            if (check == menuCreate && isAdmin) {
+                createCarPart();
+                continue;
+            }
+            if (check == menuUpdate && isAdmin) {
+                updateCarPart();
+                continue;
+            }
+            if (check == menuDelete && isAdmin) {
+                deleteCarPart();
+                continue;
+            }
+            System.out.println("Нет такого пункта");
         }
     }
 
@@ -47,7 +48,7 @@ public class CarPartView {
         int id = readerInt();
         System.out.println("Введите название удаляемой запчасти:");
         String name = readerString();
-        carPartService.Delete(id,name);
+        carPartService.delete(id,name);
     }
 
     private void updateCarPart() {
@@ -64,7 +65,7 @@ public class CarPartView {
             String description = st.nextToken();
             String CarId = st.nextToken();
             CarPart carPart = new CarPart(id, name, description,CarId);
-            carPartService.Update(id, carPart);
+            carPartService.update(id, carPart);
         } catch (Exception e) {
             System.out.println("Неверные данные");
         }
@@ -72,18 +73,22 @@ public class CarPartView {
     }
 
     private void createCarPart() {
-        System.out.println("Введите данные новой запчасти в формате Имя-Описание-Автомобиль:");
-        String buffer = readerString();
-        StringTokenizer st = new StringTokenizer(buffer, "-");
-        String name = st.nextToken();
-        String description = st.nextToken();
-        String CarId = st.nextToken();
-        carPartService.Create(new CarPart(0, name, description,CarId));
+        try {
+            System.out.println("Введите данные новой запчасти в формате Имя-Описание-Автомобиль:");
+            String buffer = readerString();
+            StringTokenizer st = new StringTokenizer(buffer, "-");
+            String name = st.nextToken();
+            String description = st.nextToken();
+            String CarId = st.nextToken();
+            carPartService.create(new CarPart(0, name, description, CarId));
+        } catch (Exception e){
+            System.out.println("Неправильный ввод данных");
+        }
     }
 
     private boolean readCarPart(int id) {
         try {
-            CarPart carPart = carPartService.ReadCarPart(id);
+            CarPart carPart = carPartService.readCarPart(id);
             System.out.println(carPart.toStringFile());
             return true;
         } catch (Exception e) {
@@ -93,11 +98,13 @@ public class CarPartView {
     }
 
 
-    private void showMenu() {
+    private void showMenu(boolean isAdmin) {
         System.out.println(String.format("Введите %d  чтобы показать все запчасти", menuReadAll));
-        System.out.println(String.format("Введите %d  чтобы создать новую запчасть", menuCreate));
-        System.out.println(String.format("Введите %d  чтобы изменить данные запчасти", menuUpdate));
-        System.out.println(String.format("Введите %d  чтобы удалить запчасть", menuDelete));
+        if (isAdmin){
+            System.out.println(String.format("Введите %d  чтобы создать новую запчасть", menuCreate));
+            System.out.println(String.format("Введите %d  чтобы изменить данные запчасти", menuUpdate));
+            System.out.println(String.format("Введите %d  чтобы удалить запчасть", menuDelete));
+        }
     }
 
     private void readAllCarParts() {

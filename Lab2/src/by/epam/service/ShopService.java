@@ -27,7 +27,7 @@ public class ShopService {
     }
 
     public void update(int id, Shop newShop) {
-        shopDao.Update(id, newShop);
+        shopDao.update(id, newShop);
     }
 
     public Shop readShop(int id) {
@@ -35,13 +35,19 @@ public class ShopService {
     }
 
     public void delete(int id, String name) {
-        Logger log = LogManager.getLogger();
-        Shop shop = readShop(id);
-        if(shop.getName().equals(name)){
-            shopDao.delete(id);
-            log.info("Shop deleted");
-        } else {
-            log.error("Wrong control name");
+        try {
+            Logger log = LogManager.getLogger();
+            Shop shop = readShop(id);
+            if (shop.getName().equals(name)) {
+                shopDao.delete(id);
+                log.info("Shop deleted");
+            }
+            else {
+                System.out.println("Wrong control name");
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error");
             throw new IllegalArgumentException("");
         }
     }

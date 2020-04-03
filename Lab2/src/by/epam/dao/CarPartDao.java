@@ -31,8 +31,7 @@ public class CarPartDao {
                 carParts.add(new CarPart(id, name, description, CarId));
             }
             return carParts;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return null;
     }
@@ -71,7 +70,7 @@ public class CarPartDao {
         return result;
     }
 
-    public void Update(int id, CarPart newCarPart) {
+    public void update(int id, CarPart newCarPart) {
         ArrayList<CarPart> carParts = readAll();
         for (CarPart carPart : carParts) {
             if (id == carPart.getId()) {

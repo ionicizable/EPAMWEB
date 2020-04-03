@@ -18,26 +18,28 @@ public class CarPartService {
         return carParts;
     }
 
-    public void Create(CarPart carPart) {
+    public void create(CarPart carPart) {
         int newId = carPartDao.getMaxId() + 1;
         carPart.setId(newId);
         carPartDao.create(carPart);
     }
 
-    public void Update(int id, CarPart newCarPart) {
-        carPartDao.Update(id, newCarPart);
+    public void update(int id, CarPart newCarPart) {
+        carPartDao.update(id, newCarPart);
     }
 
-    public CarPart ReadCarPart(int id) {
+    public CarPart readCarPart(int id) {
         return carPartDao.readCarPart(id);
     }
 
-    public void Delete(int id, String name) {
-        CarPart carPart = ReadCarPart(id);
-        if(carPart.getName().equals(name)){
-            carPartDao.delete(id);
-        } else {
-            throw new IllegalArgumentException("Контрольное имя неверно");
+    public void delete(int id, String name) {
+        try {
+            CarPart carPart = readCarPart(id);
+            if (carPart.getName().equals(name)) {
+                carPartDao.delete(id);
+            }
+        }catch (Exception e){
+            System.out.println("Error");
         }
     }
 }

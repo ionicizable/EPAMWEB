@@ -22,29 +22,28 @@ public class ShopView {
         shopService = new ShopService();
     }
 
-    public void Start() {
+    public void Start(boolean isAdmin) {
         Logger log = LogManager.getLogger();
         while (true) {
-            showMenu();
+            showMenu(isAdmin);
             int check = readerInt();
-            switch (check) {
-                case (menuReadAll):
-                    readAllShops();
-                    break;
-                case (menuCreate):
-                    createShop();
-                    break;
-                case (menuUpdate):
-                    updateShop();
-                    log.info("Shop updated");
-                    break;
-                case (menuDelete):
-                    deleteShop();
-                    log.info("Shop deleted");
-                default:
-                    System.out.println("Нет такого пункта");
-                    break;
+            if (check == menuReadAll) {
+                readAllShops();
+                continue;
             }
+            if (check == menuCreate && isAdmin) {
+                createShop();
+                continue;
+            }
+            if (check == menuUpdate && isAdmin) {
+                updateShop();
+                continue;
+            }
+            if (check == menuDelete && isAdmin) {
+                deleteShop();
+                continue;
+            }
+            System.out.println("Нет такого пункта");
         }
     }
 
@@ -53,7 +52,7 @@ public class ShopView {
         int id = readerInt();
         System.out.println("Введите название удаляемого магазина:");
         String name = readerString();
-        shopService.delete(id,name);
+        shopService.delete(id, name);
     }
 
     private void updateShop() {
@@ -80,15 +79,20 @@ public class ShopView {
     }
 
     private void createShop() {
-        System.out.println("Введите данные нового магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
-        String buffer = readerString();
-        StringTokenizer st = new StringTokenizer(buffer, "-");
-        String name = st.nextToken();
-        String address = st.nextToken();
-        String contact = st.nextToken();
-        String worktime = st.nextToken();
-        String description = st.nextToken();
-        shopService.create(new Shop(0, name, address, contact, worktime, description));
+        try {
+            System.out.println("Введите данные нового магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
+            String buffer = readerString();
+            StringTokenizer st = new StringTokenizer(buffer, "-");
+            String name = st.nextToken();
+            String address = st.nextToken();
+            String contact = st.nextToken();
+            String worktime = st.nextToken();
+            String description = st.nextToken();
+            shopService.create(new Shop(0, name, address, contact, worktime, description));
+        }
+        catch (Exception e){
+            System.out.println("Неправильный ввод данных");
+        }
     }
 
     private boolean readShop(int id) {
@@ -104,11 +108,13 @@ public class ShopView {
     }
 
 
-    private void showMenu() {
-        System.out.println(String.format("Введите %d  чтобы показать все магазины,", menuReadAll));
-        System.out.println(String.format("Введите %d  чтобы создать новый магазин", menuCreate));
-        System.out.println(String.format("Введите %d  чтобы изменить данные магазина", menuUpdate));
-        System.out.println(String.format("Введите %d  чтобы удалить магазин", menuDelete));
+    private void showMenu(boolean isAdmin) {
+        System.out.println(String.format("Введите %d  чтобы показать все магазины", menuReadAll));
+        if (isAdmin) {
+            System.out.println(String.format("Введите %d  чтобы создать новый магазин", menuCreate));
+            System.out.println(String.format("Введите %d  чтобы изменить данные магазина", menuUpdate));
+            System.out.println(String.format("Введите %d  чтобы удалить магазин", menuDelete));
+        }
     }
 
     private void readAllShops() {
