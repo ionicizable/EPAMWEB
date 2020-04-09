@@ -1,6 +1,6 @@
 package by.epam.entities;
 
-import by.epam.utility;
+import by.epam.Utility;
 
 public class User {
     private int id;
@@ -48,7 +48,7 @@ public class User {
     }
 
     public String toStringFile(){
-        String temp = utility.valueSeparator;
+        String temp = Utility.valueSeparator;
         return id + temp + isAdmin + temp + password + temp + username;
     }
 }

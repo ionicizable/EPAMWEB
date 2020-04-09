@@ -1,6 +1,6 @@
 package by.epam.entities;
 
-import by.epam.utility;
+import by.epam.Utility;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -64,7 +64,7 @@ public class OrderData {
     }
 
     public String toStringFile() {
-        String temp = utility.valueSeparator;
+        String temp = Utility.valueSeparator;
         return id + temp + carPartId + temp + shopId + temp + getDateString();
     }
 }

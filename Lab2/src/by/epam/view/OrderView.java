@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OrderView {
-    private final int menuReadAll = 2;
-    private final int menuCreate = 1;
-    private final int menuDelete = 3;
+    private final int MENU_READ_ALL = 2;
+    private final int MENU_CREATE = 1;
+    private final int MENU_DELETE = 3;
 
     private OrderService orderService;
     private CarPartService carPartService;
@@ -35,15 +35,15 @@ public class OrderView {
         while (true) {
             showMenu(isAdmin);
             int check = readerInt();
-            if (check == menuReadAll && isAdmin) {
+            if (check == MENU_READ_ALL && isAdmin) {
                 readAllOrders();
                 continue;
             }
-            if (check == menuCreate) {
+            if (check == MENU_CREATE) {
                 createOrder();
                 continue;
             }
-            if (check == menuDelete && isAdmin) {
+            if (check == MENU_DELETE && isAdmin) {
                 deleteOrder();
                 continue;
             }
@@ -97,10 +97,10 @@ public class OrderView {
 
 
     private void showMenu(boolean isAdmin) {
-        System.out.println(String.format("Введите %d  чтобы создать новый заказ", menuCreate));
+        System.out.println(String.format("Введите %d  чтобы создать новый заказ", MENU_CREATE));
         if (isAdmin){
-            System.out.println(String.format("Введите %d  чтобы показать все заказы", menuReadAll));
-            System.out.println(String.format("Введите %d  чтобы удалить заказ", menuDelete));
+            System.out.println(String.format("Введите %d  чтобы показать все заказы", MENU_READ_ALL));
+            System.out.println(String.format("Введите %d  чтобы удалить заказ", MENU_DELETE));
         }
 
     }

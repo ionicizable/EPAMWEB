@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 
 public class ShopService {
-
     private ShopDao shopDao;
 
     public ShopService() {
@@ -20,7 +19,7 @@ public class ShopService {
         return shops;
     }
 
-        public void create(Shop shop) {
+    public void create(Shop shop) {
         int newId = shopDao.getMaxId() + 1;
         shop.setId(newId);
         shopDao.create(shop);
@@ -41,14 +40,10 @@ public class ShopService {
             if (shop.getName().equals(name)) {
                 shopDao.delete(id);
                 log.info("Shop deleted");
-            }
-            else {
+            } else {
                 System.out.println("Wrong control name");
             }
-        }
-        catch (Exception e){
-            System.out.println("Error");
-            throw new IllegalArgumentException("");
+        } catch (IllegalArgumentException ignored) {
         }
     }
 }

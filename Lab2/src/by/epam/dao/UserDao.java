@@ -1,5 +1,6 @@
 package by.epam.dao;
 
+import by.epam.Utility;
 import by.epam.entities.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,10 +11,11 @@ import java.util.StringTokenizer;
 
 public class UserDao {
     private ObjectOutputStream outputStream;
+    Logger log = LogManager.getLogger();
 
     public void create(User user) {
         Logger log = LogManager.getLogger();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/User.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.userData, true))) {
             writer.write(user.toStringFile());
             writer.newLine();
             log.info("User Created");
@@ -23,40 +25,28 @@ public class UserDao {
     }
 
     public ArrayList<User> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/User.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.userData))) {
             ArrayList<User> users = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, "-");
-                int id = Integer.parseInt(st.nextToken());
-                boolean isAdmin = Boolean.parseBoolean(st.nextToken());
-                String username = st.nextToken();
-                String password = st.nextToken();
-                users.add(new User(id, isAdmin,username,password));
+                users.add(userTokenizer(buffer));
             }
             return users;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
 
 
     public void writeAll(ArrayList<User> users) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "User.txt")))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.userData)))) {
             for (User user : users) {
-                String temp = "-";
-                writer.write(Integer.toString(user.getId()));
-                writer.write(temp);
-                writer.write(String.valueOf(user.getisAdmin()));
-                writer.write(temp);
-                writer.write(user.getUsername());
-                writer.write(temp);
-                writer.write(user.getPassword());
+                writer.write(user.toStringFile());
                 writer.write("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -104,5 +94,14 @@ public class UserDao {
             }
         }
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
+    }
+
+    public User userTokenizer(String buffer){
+        StringTokenizer st = new StringTokenizer(buffer, "-");
+        int id = Integer.parseInt(st.nextToken());
+        boolean isAdmin = Boolean.parseBoolean(st.nextToken());
+        String username = st.nextToken();
+        String password = st.nextToken();
+        return new User(id, isAdmin,username,password);
     }
 }

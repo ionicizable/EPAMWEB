@@ -1,6 +1,6 @@
 package by.epam.entities;
 
-import by.epam.utility;
+import by.epam.Utility;
 
 public class Shop {
 
@@ -61,7 +61,7 @@ public class Shop {
     }
 
     public String toStringFile(){
-        String temp = utility.valueSeparator;
+        String temp = Utility.valueSeparator;
         return Integer.toString(id) + temp + name + temp + address + temp + contact + temp + worktime + temp + description;
     }
 

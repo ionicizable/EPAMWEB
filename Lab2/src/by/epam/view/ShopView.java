@@ -1,5 +1,6 @@
 package by.epam.view;
 
+import by.epam.Utility;
 import by.epam.entities.Shop;
 import by.epam.service.ShopService;
 import org.apache.logging.log4j.LogManager;
@@ -11,10 +12,10 @@ import java.util.StringTokenizer;
 
 public class ShopView {
 
-    private final int menuReadAll = 1;
-    private final int menuCreate = 2;
-    private final int menuUpdate = 3;
-    private final int menuDelete = 4;
+    private final int MENU_READ_ALL = 1;
+    private final int MENU_CREATE = 2;
+    private final int MENU_UPDATE = 3;
+    private final int MENU_DELETE = 4;
 
     private ShopService shopService;
 
@@ -27,19 +28,19 @@ public class ShopView {
         while (true) {
             showMenu(isAdmin);
             int check = readerInt();
-            if (check == menuReadAll) {
+            if (check == MENU_READ_ALL) {
                 readAllShops();
                 continue;
             }
-            if (check == menuCreate && isAdmin) {
+            if (check == MENU_CREATE && isAdmin) {
                 createShop();
                 continue;
             }
-            if (check == menuUpdate && isAdmin) {
+            if (check == MENU_UPDATE && isAdmin) {
                 updateShop();
                 continue;
             }
-            if (check == menuDelete && isAdmin) {
+            if (check == MENU_DELETE && isAdmin) {
                 deleteShop();
                 continue;
             }
@@ -64,7 +65,7 @@ public class ShopView {
         try {
             System.out.println("Введите новые данные магазина в формате Имя-Адрес-Контакты-ВремяРаботы-Описание:");
             String buffer = readerString();
-            StringTokenizer st = new StringTokenizer(buffer, "-");
+            StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
             String name = st.nextToken();
             String address = st.nextToken();
             String contact = st.nextToken();
@@ -109,11 +110,11 @@ public class ShopView {
 
 
     private void showMenu(boolean isAdmin) {
-        System.out.println(String.format("Введите %d  чтобы показать все магазины", menuReadAll));
+        System.out.println(String.format("Введите %d  чтобы показать все магазины", MENU_READ_ALL));
         if (isAdmin) {
-            System.out.println(String.format("Введите %d  чтобы создать новый магазин", menuCreate));
-            System.out.println(String.format("Введите %d  чтобы изменить данные магазина", menuUpdate));
-            System.out.println(String.format("Введите %d  чтобы удалить магазин", menuDelete));
+            System.out.println(String.format("Введите %d  чтобы создать новый магазин", MENU_CREATE));
+            System.out.println(String.format("Введите %d  чтобы изменить данные магазина", MENU_UPDATE));
+            System.out.println(String.format("Введите %d  чтобы удалить магазин", MENU_DELETE));
         }
     }
 

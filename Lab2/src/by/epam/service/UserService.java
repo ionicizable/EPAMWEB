@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class UserService {
 
     private UserDao userDao;
+    Logger log = LogManager.getLogger();
 
     public UserService() {
         userDao = new UserDao();
@@ -34,7 +35,6 @@ public class UserService {
     }
 
     public void delete(int id, String Username, String Password) {
-        Logger log = LogManager.getLogger();
         User user = readUser(id);
         if (user.getUsername().equals(Username) && user.getPassword().equals(Password)) {
             userDao.delete(id);

@@ -11,10 +11,10 @@ import java.util.StringTokenizer;
 
 public class UserView {
 
-    private final int menuReadAll = 1;
-    private final int menuCreate = 2;
-    private final int menuUpdate = 3;
-    private final int menuDelete = 4;
+    private final int MENU_READ_ALL = 1;
+    private final int MENU_CREATE = 2;
+    private final int MENU_UPDATE = 3;
+    private final int MENU_DELETE = 4;
 
     private UserService userService;
 
@@ -27,16 +27,16 @@ public class UserView {
                 showMenu();
                 int check = readerInt();
                 switch (check) {
-                    case (menuReadAll):
+                    case (MENU_READ_ALL):
                         readAll();
                         break;
-                    case (menuCreate):
+                    case (MENU_CREATE):
                         createUser();
                         break;
-                    case (menuUpdate):
+                    case (MENU_UPDATE):
                         updateUser();
                         break;
-                    case (menuDelete):
+                    case (MENU_DELETE):
                         deleteUser();
                         break;
                     default:
@@ -115,10 +115,10 @@ public class UserView {
     }
 
     private void showMenu() {
-        System.out.println(String.format("Введите %d  чтобы показать всех пользователей", menuReadAll));
-        System.out.println(String.format("Введите %d  создать нового пользователя", menuCreate));
-        System.out.println(String.format("Введите %d  чтобы изменить пользователя", menuUpdate));
-        System.out.println(String.format("Введите %d  чтобы удалить пользователя", menuDelete));
+        System.out.println(String.format("Введите %d  чтобы показать всех пользователей", MENU_READ_ALL));
+        System.out.println(String.format("Введите %d  создать нового пользователя", MENU_CREATE));
+        System.out.println(String.format("Введите %d  чтобы изменить пользователя", MENU_UPDATE));
+        System.out.println(String.format("Введите %d  чтобы удалить пользователя", MENU_DELETE));
     }
 
 

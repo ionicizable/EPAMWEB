@@ -2,10 +2,13 @@ package by.epam.service;
 
 import by.epam.dao.CarPartDao;
 import by.epam.entities.CarPart;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 
 public class CarPartService {
+    Logger log = LogManager.getLogger();
 
     private CarPartDao carPartDao;
 
@@ -29,7 +32,7 @@ public class CarPartService {
     }
 
     public CarPart readCarPart(int id) {
-        return carPartDao.readCarPart(id);
+            return carPartDao.readCarPart(id);
     }
 
     public void delete(int id, String name) {
@@ -38,8 +41,7 @@ public class CarPartService {
             if (carPart.getName().equals(name)) {
                 carPartDao.delete(id);
             }
-        }catch (Exception e){
-            System.out.println("Error");
+        }catch (IllegalArgumentException ignored){
         }
     }
 }

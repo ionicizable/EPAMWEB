@@ -2,7 +2,7 @@ package by.epam.dao;
 
 import by.epam.entities.Order;
 import by.epam.entities.OrderData;
-import by.epam.utility;
+import by.epam.Utility;
 
 import java.io.*;
 import java.text.ParseException;
@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class OrderDao {
-    private ObjectOutputStream outputStream;
+    //private ObjectOutputStream outputStream;
 
     public void create(Order order) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/Order.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.orderData, true))) {
             writer.write(order.toStringFile());
             writer.newLine();
         } catch (IOException ignored) {
@@ -21,16 +21,11 @@ public class OrderDao {
     }
 
     public ArrayList<OrderData> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/Order.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.orderData))) {
             ArrayList<OrderData> orders = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, utility.valueSeparator);
-                int id = Integer.parseInt(st.nextToken());
-                int carPartId = Integer.parseInt(st.nextToken());
-                int shopId = Integer.parseInt(st.nextToken());
-                String date = st.nextToken();
-                orders.add(new OrderData(id, carPartId, shopId, date));
+                orders.add(orderTokenizer(buffer));
             }
             return orders;
         } catch (IOException | ParseException ignored) {
@@ -44,7 +39,7 @@ public class OrderDao {
     }
 
     public void writeAll(ArrayList<OrderData> orders) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "Order.txt")))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.orderData)))) {
             for (OrderData order : orders) {
                 writer.write(order.toStringFile());
                 writer.write("\n");
@@ -84,5 +79,14 @@ public class OrderDao {
             }
         }
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
+    }
+
+    public OrderData orderTokenizer(String buffer) throws ParseException {
+        StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
+        int id = Integer.parseInt(st.nextToken());
+        int carPartId = Integer.parseInt(st.nextToken());
+        int shopId = Integer.parseInt(st.nextToken());
+        String date = st.nextToken();
+        return new OrderData(id, carPartId, shopId, date);
     }
 }
