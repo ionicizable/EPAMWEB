@@ -30,19 +30,19 @@ public class ShopView {
             int check = readerInt();
             if (check == MENU_READ_ALL) {
                 readAllShops();
-                continue;
+                break;
             }
             if (check == MENU_CREATE && isAdmin) {
                 createShop();
-                continue;
+                break;
             }
             if (check == MENU_UPDATE && isAdmin) {
                 updateShop();
-                continue;
+                break;
             }
             if (check == MENU_DELETE && isAdmin) {
                 deleteShop();
-                continue;
+                break;
             }
             System.out.println("Нет такого пункта");
         }

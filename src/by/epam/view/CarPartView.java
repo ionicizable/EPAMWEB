@@ -25,19 +25,19 @@ public class CarPartView {
             int check = readerInt();
             if (check == MENU_READ_ALL) {
                 readAllCarParts();
-                continue;
+                break;
             }
             if (check == MENU_CREATE && isAdmin) {
                 createCarPart();
-                continue;
+                break;
             }
             if (check == MENU_UPDATE && isAdmin) {
                 updateCarPart();
-                continue;
+                break;
             }
             if (check == MENU_DELETE && isAdmin) {
                 deleteCarPart();
-                continue;
+                break;
             }
             System.out.println("Нет такого пункта");
         }

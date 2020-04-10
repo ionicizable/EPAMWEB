@@ -33,11 +33,13 @@ public class OrderService {
     }
 
     public void create(Order order) {
+        Logger log = LogManager.getLogger();
         int newId = orderDao.getMaxId() + 1;
         order.setId(newId);
         LocalDateTime now = LocalDateTime.now();
         order.setDate(java.sql.Timestamp.valueOf(now));
         orderDao.create(order);
+        log.info("Order created");
     }
 
     public Order readOrder(int id) throws ParseException {
