@@ -19,7 +19,7 @@ public class Main {
 
         User user = uview.login();
 
-        while (true) {
+        while (true){
             if (user.getisAdmin()){
                 System.out.println("1.Магазины 2.Запчасти 3.Заказы 4.Пользователи");
             }
