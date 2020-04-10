@@ -20,6 +20,7 @@ public class Main {
         User user = uview.login();
 
         while (true) {
+            try{
             if (user.getisAdmin()) {
                 System.out.println("1.Магазины 2.Запчасти 3.Заказы 4.Пользователи");
             } else {
@@ -27,7 +28,6 @@ public class Main {
             }
 
             int check = readerInt();
-            try {
                 if (check == 1) {
                     sview.Start(user.getisAdmin());
                     continue;
