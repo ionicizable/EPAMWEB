@@ -19,33 +19,38 @@ public class Main {
 
         User user = uview.login();
 
-        while (true){
-            if (user.getisAdmin()){
+        while (true) {
+            if (user.getisAdmin()) {
                 System.out.println("1.Магазины 2.Запчасти 3.Заказы 4.Пользователи");
-            }
-            else{
+            } else {
                 System.out.println("1.Магазины 2.Запчасти 3.Заказы");
             }
 
             int check = readerInt();
-            if (check == 1) {
-                sview.Start(user.getisAdmin());
-                continue;
+            try {
+                if (check == 1) {
+                    sview.Start(user.getisAdmin());
+                    continue;
+                }
+                if (check == 2) {
+                    cview.Start(user.getisAdmin());
+                    continue;
+                }
+                if (check == 3) {
+                    oview.Start(user.getisAdmin());
+                    continue;
+                }
+                if (check == 4 && user.getisAdmin()) {
+                    uview.Start();
+                    continue;
+                }
+                System.out.println("Нет такого пункта");
             }
-            if (check == 2) {
-                cview.Start(user.getisAdmin());
-                continue;
+            catch (Exception e) {
+                System.out.println("Неверные данные");
             }
-            if (check == 3) {
-                oview.Start(user.getisAdmin());
-                continue;
-            }
-            if (check == 4 && user.getisAdmin()) {
-                uview.Start();
-                continue;
-            }
-            System.out.println("Нет такого пункта");
         }
+
     }
 
     public static int readerInt() {

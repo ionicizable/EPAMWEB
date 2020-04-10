@@ -37,15 +37,15 @@ public class OrderView {
             int check = readerInt();
             if (check == MENU_READ_ALL && isAdmin) {
                 readAllOrders();
-                break;
+                continue;
             }
             if (check == MENU_CREATE) {
                 createOrder();
-                break;
+                continue;
             }
             if (check == MENU_DELETE && isAdmin) {
                 deleteOrder();
-                break;
+                continue;
             }
             System.out.println("Нет такого пункта");
         }

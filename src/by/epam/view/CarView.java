@@ -30,19 +30,19 @@ public class CarView {
             int check = readerInt();
             if (check == MENU_READ_ALL) {
                 readAllCars();
-                break;
+                continue;
             }
             if (check == MENU_CREATE && isAdmin) {
                 createCar();
-                break;
+                continue;
             }
             if (check == MENU_UPDATE && isAdmin) {
                 updateCar();
-                break;
+                continue;
             }
             if (check == MENU_DELETE && isAdmin) {
                 deleteCar();
-                break;
+                continue;
             }
             System.out.println("Нет такого пункта");
         }
