@@ -8,41 +8,40 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 
 public class CarPartService {
+    Logger log = LogManager.getLogger();
 
     private CarPartDao carPartDao;
 
     public CarPartService() {
-       carPartDao = new CarPartDao();
+        carPartDao = new CarPartDao();
     }
 
-    public ArrayList<CarPart> ReadAll() {
+    public ArrayList<CarPart> readAll() {
         ArrayList<CarPart> carParts = carPartDao.readAll();
         return carParts;
     }
 
-    public void Create(CarPart carPart) {
+    public void create(CarPart carPart) {
         int newId = carPartDao.getMaxId() + 1;
         carPart.setId(newId);
         carPartDao.create(carPart);
     }
 
-    public void Update(int id, CarPart newCarPart) {
-        carPartDao.Update(id, newCarPart);
+    public void update(int id, CarPart newCarPart) {
+        carPartDao.update(id, newCarPart);
     }
 
-    public CarPart ReadCarPart(int id) {
+    public CarPart readCarPart(int id) {
         return carPartDao.readCarPart(id);
     }
 
-    public void Delete(int id, String name) {
-        Logger log = LogManager.getLogger();
-        CarPart carPart = ReadCarPart(id);
-        if(carPart.getName().equals(name)){
-            carPartDao.delete(id);
-            log.info("CarPart deleted");
-        } else {
-            log.error("Wrong control name");
-            throw new IllegalArgumentException("");
+    public void delete(int id, String name) {
+        try {
+            CarPart carPart = readCarPart(id);
+            if (carPart.getName().equals(name)) {
+                carPartDao.delete(id);
+            }
+        }catch (IllegalArgumentException ignored){
         }
     }
 }

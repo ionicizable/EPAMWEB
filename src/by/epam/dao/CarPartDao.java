@@ -1,6 +1,7 @@
 package by.epam.dao;
 
 import by.epam.entities.CarPart;
+import by.epam.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,58 +10,41 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class CarPartDao {
-    private ObjectOutputStream outputStream;
+    //private ObjectOutputStream outputStream;
+    Logger log = LogManager.getLogger();
 
     public void create(CarPart carPart) {
-        Logger log = LogManager.getLogger();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/CarPart.txt", true))) {
-                writer.write(carPart.toStringFile());
-                writer.newLine();
-                log.info("CarPart Created");
-            } catch (IOException ignored) {
-                log.error("Creation error");
-            }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.carPartData, true))) {
+            writer.write(carPart.toStringFile());
+            writer.newLine();
+            log.info("CarPart created");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     public ArrayList<CarPart> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/CarPart.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.carPartData))) {
             ArrayList<CarPart> carParts = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, "-");
-                int id = Integer.parseInt(st.nextToken());
-                String name = st.nextToken();
-                String description = st.nextToken();
-                String CarId = st.nextToken();
-                carParts.add(new CarPart(id, name, description, CarId));
+                carParts.add(carPartTokenizer(buffer));
             }
             return carParts;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
 
-    public void deleteByName(String name, ArrayList<CarPart> carParts) {
-        // TODO: 19.03.2020 create delete method
-
-    }
-
     public void writeAll(ArrayList<CarPart> carParts) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "CarPart.txt")))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.carPartData)))) {
             for (CarPart carPart : carParts) {
-                String temp = "-";
-                writer.write(Integer.toString(carPart.getId()));
-                writer.write(temp);
-                writer.write(carPart.getName());
-                writer.write(temp);
-                writer.write(carPart.getDescription());
-                writer.write(temp);
-                writer.write(carPart.getCarId());
+                writer.write(carPart.toStringFile());
                 writer.write("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -75,7 +59,7 @@ public class CarPartDao {
         return result;
     }
 
-    public void Update(int id, CarPart newCarPart) {
+    public void update(int id, CarPart newCarPart) {
         ArrayList<CarPart> carParts = readAll();
         for (CarPart carPart : carParts) {
             if (id == carPart.getId()) {
@@ -86,6 +70,7 @@ public class CarPartDao {
             }
         }
         writeAll(carParts);
+        log.info("CarPart updated");
     }
 
     public CarPart readCarPart(int id) {
@@ -95,6 +80,7 @@ public class CarPartDao {
                 return carPart;
             }
         }
+        log.error("Wrong id");
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
     }
 
@@ -104,9 +90,19 @@ public class CarPartDao {
             if (id == carPart.getId()) {
                 carParts.remove(carPart);
                 writeAll(carParts);
+                log.info("CarPart deleted");
                 return;
             }
         }
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
+    }
+
+    public CarPart carPartTokenizer(String buffer){
+        StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
+        int id = Integer.parseInt(st.nextToken());
+        String name = st.nextToken();
+        String description = st.nextToken();
+        String CarId = st.nextToken();
+        return new CarPart(id, name, description, CarId);
     }
 }

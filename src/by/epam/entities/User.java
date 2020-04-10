@@ -4,13 +4,13 @@ import by.epam.Utility;
 
 public class User {
     private int id;
-    private String email;
+    private boolean isAdmin;
     private String username;
     private String password;
 
-    public User(int id, String email, String username, String password) {
+    public User(int id, boolean isAdmin, String username, String password) {
         this.id = id;
-        this.email = email;
+        this.isAdmin = isAdmin;
         this.username = username;
         this.password = password;
     }
@@ -23,12 +23,12 @@ public class User {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public boolean getisAdmin() {
+        return isAdmin;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setisAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public String getUsername() {
@@ -49,6 +49,6 @@ public class User {
 
     public String toStringFile(){
         String temp = Utility.valueSeparator;
-        return id + temp + email + temp + password + temp + username;
+        return id + temp + isAdmin + temp + password + temp + username;
     }
 }

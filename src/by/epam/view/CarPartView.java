@@ -2,8 +2,6 @@ package by.epam.view;
 
 import by.epam.entities.CarPart;
 import by.epam.service.CarPartService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -11,55 +9,46 @@ import java.util.StringTokenizer;
 
 public class CarPartView {
 
-    private final int menuReadAll = 1;
-    private final int menuCreate = 2;
-    private final int menuUpdate = 3;
-    private final int menuDelete = 4;
+    private final int MENU_READ_ALL = 1;
+    private final int MENU_CREATE = 2;
+    private final int MENU_UPDATE = 3;
+    private final int MENU_DELETE = 4;
 
     private CarPartService carPartService;
 
     public CarPartView() { carPartService = new CarPartService();
     }
 
-    public void Start() {
+    public void Start(boolean isAdmin) {
         while (true) {
-            try {
-                showMenu();
-                int check = readerInt();
-                switch (check) {
-                    case (menuReadAll):
-                        readAllCarParts();
-                        break;
-                    case (menuCreate):
-                        createCarPart();
-                        break;
-                    case (menuUpdate):
-                        updateCarPart();
-                        break;
-                    case (menuDelete):
-                        deleteCarPart();
-                        break;
-                    default:
-                        System.out.println("Нет такого пункта");
-                        break;
-                }
+            showMenu(isAdmin);
+            int check = readerInt();
+            if (check == MENU_READ_ALL) {
+                readAllCarParts();
+                continue;
             }
-             catch (Exception e) {
-                System.out.println("Неверно введенные данные");
+            if (check == MENU_CREATE && isAdmin) {
+                createCarPart();
+                continue;
             }
+            if (check == MENU_UPDATE && isAdmin) {
+                updateCarPart();
+                continue;
+            }
+            if (check == MENU_DELETE && isAdmin) {
+                deleteCarPart();
+                continue;
+            }
+            System.out.println("Нет такого пункта");
         }
     }
 
     private void deleteCarPart() {
         System.out.println("Введите номер удаляемой запчасти:");
         int id = readerInt();
-        try { System.out.println("Введите название удаляемой запчасти:");
+        System.out.println("Введите название удаляемой запчасти:");
         String name = readerString();
-        carPartService.Delete(id,name);
-        }
-        catch (Exception e) {
-            System.out.println("Неверно введенные данные");
-        }
+        carPartService.delete(id,name);
     }
 
     private void updateCarPart() {
@@ -76,11 +65,11 @@ public class CarPartView {
             String description = st.nextToken();
             String CarId = st.nextToken();
             CarPart carPart = new CarPart(id, name, description,CarId);
-            carPartService.Update(id, carPart);
+            carPartService.update(id, carPart);
+        } catch (Exception e) {
+            System.out.println("Неверные данные");
         }
-        catch (Exception e) {
-            System.out.println("Неверно введенные данные");
-        }
+
     }
 
     private void createCarPart() {
@@ -91,15 +80,15 @@ public class CarPartView {
             String name = st.nextToken();
             String description = st.nextToken();
             String CarId = st.nextToken();
-            carPartService.Create(new CarPart(0, name, description, CarId));
-        } catch (Exception e) {
-            System.out.println("Неверно введенные данные");
+            carPartService.create(new CarPart(0, name, description, CarId));
+        } catch (Exception e){
+            System.out.println("Неправильный ввод данных");
         }
     }
 
     private boolean readCarPart(int id) {
         try {
-            CarPart carPart = carPartService.ReadCarPart(id);
+            CarPart carPart = carPartService.readCarPart(id);
             System.out.println(carPart.toStringFile());
             return true;
         } catch (Exception e) {
@@ -109,21 +98,21 @@ public class CarPartView {
     }
 
 
-    private void showMenu() {
-        System.out.println(String.format("Введите %d  чтобы показать все запчасти", menuReadAll));
-        System.out.println(String.format("Введите %d  чтобы создать новую запчасть", menuCreate));
-        System.out.println(String.format("Введите %d  чтобы изменить данные запчасти", menuUpdate));
-        System.out.println(String.format("Введите %d  чтобы удалить запчасть", menuDelete));
+    private void showMenu(boolean isAdmin) {
+        System.out.println(String.format("Введите %d  чтобы показать все запчасти", MENU_READ_ALL));
+        if (isAdmin){
+            System.out.println(String.format("Введите %d  чтобы создать новую запчасть", MENU_CREATE));
+            System.out.println(String.format("Введите %d  чтобы изменить данные запчасти", MENU_UPDATE));
+            System.out.println(String.format("Введите %d  чтобы удалить запчасть", MENU_DELETE));
+        }
     }
 
     private void readAllCarParts() {
-        Logger log = LogManager.getLogger();
-        ArrayList<CarPart> carParts = carPartService.ReadAll();
+        ArrayList<CarPart> carParts = carPartService.readAll();
         for (CarPart carPart : carParts
         ) {
             System.out.println(carPart.toStringFile());
         }
-        log.info("CarPart list reviewed");
     }
 
     public int readerInt() {

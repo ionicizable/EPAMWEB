@@ -62,7 +62,7 @@ public class Shop {
 
     public String toStringFile(){
         String temp = Utility.valueSeparator;
-        return Integer.toString(id) + temp + name + temp + address + temp + contact + temp + worktime + temp + description;
+        return id + temp + name + temp + address + temp + contact + temp + worktime + temp + description;
     }
 
     public Shop(int id,String name, String address, String contact, String worktime, String description) {

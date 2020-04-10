@@ -1,6 +1,7 @@
 package by.epam.dao;
 
 import by.epam.entities.Shop;
+import by.epam.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,11 +10,11 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class ShopDao {
-    private ObjectOutputStream outputStream;
+    //private ObjectOutputStream outputStream;
+    Logger log = LogManager.getLogger();
 
     public void create(Shop shop) {
-        Logger log = LogManager.getLogger();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data/Shop.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.shopData, true))) {
             writer.write(shop.toStringFile());
             writer.newLine();
             log.info("Shop Created");
@@ -23,50 +24,28 @@ public class ShopDao {
     }
 
     public ArrayList<Shop> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data/Shop.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.shopData))) {
             ArrayList<Shop> shops = new ArrayList<>();
             String buffer;
             while ((buffer = reader.readLine()) != null) {
-                StringTokenizer st = new StringTokenizer(buffer, "-");
-                int id = Integer.parseInt(st.nextToken());
-                String name = st.nextToken();
-                String address = st.nextToken();
-                String contact = st.nextToken();
-                String worktime = st.nextToken();
-                String description = st.nextToken();
-                shops.add(new Shop(id, name, address, contact, worktime, description));
+                shops.add(shopTokenizer(buffer));
             }
             return shops;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
 
-    public void deleteByName(String name, ArrayList<Shop> shops) {
-        // TODO: 19.03.2020 create delete method
-
-    }
-
     public void writeAll(ArrayList<Shop> shops) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File("data", "Shop.txt")))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.shopData)))) {
             for (Shop shop : shops) {
-                String temp = "-";
-                writer.write(Integer.toString(shop.getId()));
-                writer.write(temp);
-                writer.write(shop.getName());
-                writer.write(temp);
-                writer.write(shop.getAddress());
-                writer.write(temp);
-                writer.write(shop.getContact());
-                writer.write(temp);
-                writer.write(shop.getWorktime());
-                writer.write(temp);
-                writer.write(shop.getDescription());
+                String temp = Utility.valueSeparator;
+                writer.write(shop.toStringFile());
                 writer.write("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -81,7 +60,7 @@ public class ShopDao {
         return result;
     }
 
-    public void Update(int id, Shop newShop) {
+    public void update(int id, Shop newShop) {
         ArrayList<Shop> shops = readAll();
         for (Shop shop : shops) {
             if (id == shop.getId()) {
@@ -93,6 +72,7 @@ public class ShopDao {
                 break;
             }
         }
+        log.info("Update successful");
         writeAll(shops);
     }
 
@@ -103,6 +83,7 @@ public class ShopDao {
                 return shop;
             }
         }
+        log.error("Error in readShop");
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
     }
 
@@ -115,6 +96,18 @@ public class ShopDao {
                 return;
             }
         }
+        log.error("Error in delete");
         throw new IllegalArgumentException(String.format("Id %d не найден", id));
+    }
+
+    public Shop shopTokenizer(String buffer){
+        StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
+        int id = Integer.parseInt(st.nextToken());
+        String name = st.nextToken();
+        String address = st.nextToken();
+        String contact = st.nextToken();
+        String worktime = st.nextToken();
+        String description = st.nextToken();
+        return new Shop(id, name, address, contact, worktime, description);
     }
 }

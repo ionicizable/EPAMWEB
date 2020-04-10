@@ -10,31 +10,33 @@ import java.util.ArrayList;
 public class UserService {
 
     private UserDao userDao;
+    Logger log = LogManager.getLogger();
 
     public UserService() {
         userDao = new UserDao();
     }
 
-    public ArrayList<User> ReadAll() {
-        ArrayList<User> users = userDao.readAll();
-        return users;
+    public ArrayList<User> readAll() {
+        return userDao.readAll();
     }
 
-    public void Create(User user) {
+    public void create(User user) {
         int newId = userDao.getMaxId() + 1;
         user.setId(newId);
         userDao.create(user);
     }
-    public User ReadUser(int id) {
+
+    public User readUser(int id) {
         return userDao.readUser(id);
     }
-    public void Update(int id, User newUser) {
+
+    public void update(int id, User newUser) {
         userDao.Update(id, newUser);
     }
-    public void Delete(int id, String Username, String Password ) {
-        Logger log = LogManager.getLogger();
-        User user = ReadUser(id);
-        if(user.getUsername().equals(Username) && user.getPassword().equals(Password)){
+
+    public void delete(int id, String Username, String Password) {
+        User user = readUser(id);
+        if (user.getUsername().equals(Username) && user.getPassword().equals(Password)) {
             userDao.delete(id);
             log.info("User deleted");
         } else {
@@ -42,5 +44,14 @@ public class UserService {
             throw new IllegalArgumentException("");
         }
     }
-}
 
+    public User login(String username, String password) {
+        ArrayList<User> users = userDao.readAll();
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        throw new IllegalArgumentException("Неверная комбинация логина и пароля.");
+    }
+}
