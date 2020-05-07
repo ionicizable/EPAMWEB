@@ -5,6 +5,7 @@ import by.epam.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -17,6 +18,8 @@ public class UserView {
     private final int MENU_DELETE = 4;
 
     private UserService userService;
+
+    Logger log = LogManager.getLogger();
 
     public UserView() {
         userService = new UserService();
@@ -47,12 +50,16 @@ public class UserView {
     }
 
     private void readAll() {
-        Logger log = LogManager.getLogger();
-        ArrayList<User> users = userService.readAll();
-        for (User user : users) {
-            System.out.println(user.toStringFile());
+        try {
+            Logger log = LogManager.getLogger();
+            ArrayList<User> users = userService.readAll();
+            for (User user : users) {
+                System.out.println(user.toStringFile());
+            }
+            log.info("User list reviewed");
+        } catch (SQLException e){
+            log.error(e.getMessage());
         }
-        log.info("User list reviewed");
     }
 
     private void deleteUser() {
@@ -64,8 +71,8 @@ public class UserView {
             System.out.println("Введите пароль:");
             String password = readerString();
             userService.delete(id, username, password);
-        } catch (Exception e) {
-            System.out.println("Неверно введенные данные");
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -91,13 +98,13 @@ public class UserView {
 
     private void createUser() {
         try {
-            System.out.println("Введите данные нового пользователя в формате Почта-Пароль-ИмяПользователя:");
+            System.out.println("Введите данные нового пользователя в формате Админ-Пароль-ИмяПользователя:");
             String buffer = readerString();
             StringTokenizer st = new StringTokenizer(buffer, "-");
             Boolean isAdmin = Boolean.parseBoolean(st.nextToken());
             String password = st.nextToken();
             String username = st.nextToken();
-            userService.create(new User(0, isAdmin, password, username));
+            userService.create(new User(0, isAdmin, username, password));
         } catch (Exception e) {
             System.out.println("Неверно введенные данные");
         }
@@ -108,8 +115,8 @@ public class UserView {
             User user = userService.readUser(id);
             System.out.println(user.toStringFile());
             return true;
-        } catch (Exception e) {
-            System.out.println(String.format("Ошибка %s", e.getMessage()));
+        } catch (SQLException e) {
+            log.error(e.getMessage());
             return false;
         }
     }
@@ -142,8 +149,8 @@ public class UserView {
             String password = readerString();
             try {
                 return userService.login(username, password);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            } catch (IllegalArgumentException | SQLException e) {
+                log.error(e.getMessage());
             }
         }
     }

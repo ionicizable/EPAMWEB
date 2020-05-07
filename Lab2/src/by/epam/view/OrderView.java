@@ -3,12 +3,15 @@ package by.epam.view;
 import by.epam.entities.CarPart;
 import by.epam.entities.Order;
 import by.epam.entities.Shop;
+import by.epam.entities.User;
 import by.epam.service.CarPartService;
 import by.epam.service.OrderService;
 import by.epam.service.ShopService;
+import by.epam.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -21,16 +24,19 @@ public class OrderView {
     private OrderService orderService;
     private CarPartService carPartService;
     private ShopService shopService;
-    //private ShopView shopView;
-    //private CarPartView carPartView;
+    private UserService userService;
+
+    Logger log = LogManager.getLogger();
 
     public OrderView() {
         ShopService shopService = new ShopService();
         CarPartService carPartService = new CarPartService();
-        orderService = new OrderService(shopService,carPartService);
+        UserService userService = new UserService();
+        orderService = new OrderService(shopService, carPartService, userService);
     }
 
-    public void Start(boolean isAdmin) throws ParseException {
+    public void Start(User user) throws ParseException {
+        Boolean isAdmin = user.getisAdmin();
         Logger log = LogManager.getLogger();
         while (true) {
             showMenu(isAdmin);
@@ -40,7 +46,7 @@ public class OrderView {
                 continue;
             }
             if (check == MENU_CREATE) {
-                createOrder();
+                createOrder(user);
                 continue;
             }
             if (check == MENU_DELETE && isAdmin) {
@@ -51,13 +57,17 @@ public class OrderView {
         }
     }
 
-    private void deleteOrder() throws ParseException {
-        System.out.println("Введите номер удаляемого заказа:");
-        int id = readerInt();
-        orderService.delete(id);
+    private void deleteOrder() {
+        try {
+            System.out.println("Введите номер удаляемого заказа:");
+            int id = readerInt();
+            orderService.delete(id);
+        } catch (ParseException | SQLException e) {
+            log.error(e.getMessage());
+        }
     }
 
-    private void createOrder() throws ParseException {
+    private void createOrder(User user) throws ParseException {
         try {
             CarPartService carPartService = new CarPartService();
             ShopService shopService = new ShopService();
@@ -76,10 +86,9 @@ public class OrderView {
             }
 
             int shopId = readerInt();
-            orderService.create(new Order(0, carPartId, shopId, "00000000"));
-        }catch (Exception e){
-            System.out.println("Error");
-            System.out.println(e.getMessage());
+            orderService.create(new Order(0, carPartId, shopId, user.getId(), null));
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -98,22 +107,25 @@ public class OrderView {
 
     private void showMenu(boolean isAdmin) {
         System.out.println(String.format("Введите %d  чтобы создать новый заказ", MENU_CREATE));
-        if (isAdmin){
+        if (isAdmin) {
             System.out.println(String.format("Введите %d  чтобы показать все заказы", MENU_READ_ALL));
             System.out.println(String.format("Введите %d  чтобы удалить заказ", MENU_DELETE));
         }
 
     }
 
-    private void readAllOrders() throws ParseException {
-        Logger log = LogManager.getLogger();
-        ArrayList<Order> orders = orderService.readAll();
+    private void readAllOrders() {
+        try {
+            ArrayList<Order> orders = orderService.readAll();
 
-        for (Order order : orders
-        ) {
-            System.out.println(order.toStringFile()+"\n  "+order.getCarPart().toStringFile()+"\n  "+order.getShop().toStringFile());
+            for (Order order : orders
+            ) {
+                System.out.println(order.toStringFile() + "\n  " + order.getCarPart().toStringFile() + "\n  " + order.getShop().toStringFile() + "\n  " + order.getUser().toStringFile());
+            }
+            log.info("Order list reviewed");
+        } catch (ParseException | SQLException e) {
+            log.error(e.getMessage());
         }
-        log.info("Order list reviewed");
     }
 
     public int readerInt() {

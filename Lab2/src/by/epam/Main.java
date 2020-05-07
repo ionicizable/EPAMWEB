@@ -35,7 +35,7 @@ public class Main {
                 continue;
             }
             if (check == 3) {
-                oview.Start(user.getisAdmin());
+                oview.Start(user);
                 continue;
             }
             if (check == 4) {

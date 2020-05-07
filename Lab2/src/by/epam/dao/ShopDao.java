@@ -1,55 +1,64 @@
 package by.epam.dao;
 
+import by.epam.entities.CarPart;
 import by.epam.entities.Shop;
 import by.epam.Utility;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class ShopDao {
     //private ObjectOutputStream outputStream;
     Logger log = LogManager.getLogger();
+    Connection connection = null;
+
+    public ShopDao() {
+        try {
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
+            log.info("Connection succesfull");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public void create(Shop shop) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.shopData, true))) {
-            writer.write(shop.toStringFile());
-            writer.newLine();
-            log.info("Shop Created");
-        } catch (IOException ignored) {
-            log.error("Creation error");
+        String insert_new = "INSERT INTO SHOPS VALUES(?,?,?,?,?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
+            preparedStatement.setInt(1, shop.getId());
+            preparedStatement.setString(2, shop.getName());
+            preparedStatement.setString(3, shop.getAddress());
+            preparedStatement.setString(4, shop.getContact());
+            preparedStatement.setString(5, shop.getWorktime());
+            preparedStatement.setString(6, shop.getDescription());
+            preparedStatement.execute();
+            log.info("Shop created succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
     }
 
-    public ArrayList<Shop> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.shopData))) {
+    public ArrayList<Shop> readAll() throws SQLException {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT ID, NAME, ADDRESS, CONTACT, WORKTIME, DESCRIPTION FROM SHOPS");
             ArrayList<Shop> shops = new ArrayList<>();
-            String buffer;
-            while ((buffer = reader.readLine()) != null) {
-                shops.add(shopTokenizer(buffer));
+            while (resultSet.next()) {
+                shops.add(shopFromResultSet(resultSet));
             }
             return shops;
-        } catch (IOException e) {
+        } catch (SQLException e) {
             log.error(e.getMessage());
-        }
-        return null;
-    }
-
-    public void writeAll(ArrayList<Shop> shops) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.shopData)))) {
-            for (Shop shop : shops) {
-                String temp = Utility.valueSeparator;
-                writer.write(shop.toStringFile());
-                writer.write("\n");
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
+            throw e;
         }
     }
 
-    public int getMaxId() {
+    public int getMaxId() throws SQLException {
         ArrayList<Shop> shops = readAll();
         int result = 0;
         for (Shop shop : shops) {
@@ -60,23 +69,24 @@ public class ShopDao {
         return result;
     }
 
-    public void update(int id, Shop newShop) {
-        ArrayList<Shop> shops = readAll();
-        for (Shop shop : shops) {
-            if (id == shop.getId()) {
-                shop.setName(newShop.getName());
-                shop.setAddress(newShop.getAddress());
-                shop.setContact(newShop.getContact());
-                shop.setWorktime(newShop.getWorktime());
-                shop.setDescription(newShop.getDescription());
-                break;
-            }
+    public void update(int id, Shop shop) {
+        String update = "UPDATE SHOPS SET NAME = ?, ADDRESS = ?, CONTACT = ?, WORKTIME = ?, DESCRIPTION = ? WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(update);
+            preparedStatement.setString(1, shop.getName());
+            preparedStatement.setString(2, shop.getAddress());
+            preparedStatement.setString(3, shop.getContact());
+            preparedStatement.setString(4, shop.getWorktime());
+            preparedStatement.setString(5, shop.getDescription());
+            preparedStatement.setInt(6, id);
+            preparedStatement.execute();
+            log.info("Shop updated succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        log.info("Update successful");
-        writeAll(shops);
     }
 
-    public Shop readShop(int id) {
+    public Shop readShop(int id) throws SQLException {
         ArrayList<Shop> shops = readAll();
         for (Shop shop : shops) {
             if (id == shop.getId()) {
@@ -88,26 +98,24 @@ public class ShopDao {
     }
 
     public void delete(int id) {
-        ArrayList<Shop> shops = readAll();
-        for (Shop shop : shops) {
-            if (id == shop.getId()) {
-                shops.remove(shop);
-                writeAll(shops);
-                return;
-            }
+        String delete = "DELETE FROM SHOPS WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(delete);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            log.info("Shop deleted succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        log.error("Error in delete");
-        throw new IllegalArgumentException(String.format("Id %d не найден", id));
     }
 
-    public Shop shopTokenizer(String buffer){
-        StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
-        int id = Integer.parseInt(st.nextToken());
-        String name = st.nextToken();
-        String address = st.nextToken();
-        String contact = st.nextToken();
-        String worktime = st.nextToken();
-        String description = st.nextToken();
-        return new Shop(id, name, address, contact, worktime, description);
+    private Shop shopFromResultSet(ResultSet input) throws SQLException {
+        return new Shop(
+                input.getInt(1),
+                input.getString(2),
+                input.getString(3),
+                input.getString(4),
+                input.getString(5),
+                input.getString(6));
     }
 }

@@ -11,8 +11,9 @@ public class OrderData {
     private int id;
     private int carPartId;
     private int shopId;
+    private int userId;
     private Date date;
-    private final String dateStringFormat = "yyyymmdd";
+    private final String dateStringFormat = "ddMMyyyy";
 
     public Date getDate() {
         return date;
@@ -32,11 +33,12 @@ public class OrderData {
         date = dateFormat.parse(value);
     }
 
-    public OrderData(int id, int carPartId, int shopId, String dateString) throws ParseException {
+    public OrderData(int id, int carPartId, int shopId, int userId, Date date) {
         this.id = id;
         this.carPartId = carPartId;
         this.shopId = shopId;
-        setDateString(dateString);
+        this.date = date;
+        this.userId = userId;
     }
 
     public int getId() {
@@ -63,8 +65,16 @@ public class OrderData {
         this.shopId = shopId;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String toStringFile() {
         String temp = Utility.valueSeparator;
-        return id + temp + carPartId + temp + shopId + temp + getDateString();
+        return id + temp + carPartId + temp + shopId + temp + userId + temp + getDateString();
     }
 }

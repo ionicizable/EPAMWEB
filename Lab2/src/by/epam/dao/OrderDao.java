@@ -2,53 +2,59 @@ package by.epam.dao;
 
 import by.epam.entities.Order;
 import by.epam.entities.OrderData;
-import by.epam.Utility;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.text.ParseException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 public class OrderDao {
-    //private ObjectOutputStream outputStream;
+    Logger log = LogManager.getLogger();
+    Connection connection = null;
+
+    public OrderDao() {
+        try {
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
+            log.info("Connection succesfull");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public void create(Order order) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.orderData, true))) {
-            writer.write(order.toStringFile());
-            writer.newLine();
-        } catch (IOException ignored) {
+        String insert_new = "INSERT INTO ORDERS VALUES(?,?,?,?,?)";
+        try { java.sql.Date sqlDate = new java.sql.Date(order.getDate().getTime());
+            PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
+            preparedStatement.setInt(1, order.getId());
+            preparedStatement.setDate(2, sqlDate);
+            preparedStatement.setInt(3, order.getCarPartId());
+            preparedStatement.setInt(4, order.getShopId());
+            preparedStatement.setInt(5, order.getUserId());
+            preparedStatement.execute();
+            log.info("Order created succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
     }
 
-    public ArrayList<OrderData> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.orderData))) {
+    public ArrayList<OrderData> readAll() throws SQLException {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                    statement.executeQuery("SELECT ID, ORDERDATE, CARPARTID, SHOPID, USERID FROM ORDERS");
             ArrayList<OrderData> orders = new ArrayList<>();
-            String buffer;
-            while ((buffer = reader.readLine()) != null) {
-                orders.add(orderTokenizer(buffer));
+            while (resultSet.next()) {
+                orders.add(orderFromResultSet(resultSet));
             }
             return orders;
-        } catch (IOException | ParseException ignored) {
-        }
-        return null;
-    }
-
-    public void deleteByName(String name, ArrayList<Order> orders) {
-        // TODO: 19.03.2020 create delete method
-
-    }
-
-    public void writeAll(ArrayList<OrderData> orders) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.orderData)))) {
-            for (OrderData order : orders) {
-                writer.write(order.toStringFile());
-                writer.write("\n");
-            }
-        } catch (IOException ignored) {
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            throw e;
         }
     }
 
-    public int getMaxId() {
+    public int getMaxId() throws SQLException {
         ArrayList<OrderData> orders = readAll();
         int result = 0;
         for (OrderData order : orders) {
@@ -59,7 +65,7 @@ public class OrderDao {
         return result;
     }
 
-    public OrderData readOrder(int id) {
+    public OrderData readOrder(int id) throws SQLException {
         ArrayList<OrderData> orders = readAll();
         for (OrderData order : orders) {
             if (id == order.getId()) {
@@ -70,23 +76,23 @@ public class OrderDao {
     }
 
     public void delete(int id) {
-        ArrayList<OrderData> orders = readAll();
-        for (OrderData order : orders) {
-            if (id == order.getId()) {
-                orders.remove(order);
-                writeAll(orders);
-                return;
-            }
+        String update = "DELETE FROM ORDERS WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(update);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            log.info("Order deleted succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        throw new IllegalArgumentException(String.format("Id %d не найден", id));
     }
 
-    public OrderData orderTokenizer(String buffer) throws ParseException {
-        StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
-        int id = Integer.parseInt(st.nextToken());
-        int carPartId = Integer.parseInt(st.nextToken());
-        int shopId = Integer.parseInt(st.nextToken());
-        String date = st.nextToken();
-        return new OrderData(id, carPartId, shopId, date);
+    private OrderData orderFromResultSet(ResultSet input) throws SQLException {
+        return new OrderData(
+                input.getInt(1),
+                input.getInt(3),
+                input.getInt(4),
+                input.getInt(5),
+                input.getDate(2));
     }
 }

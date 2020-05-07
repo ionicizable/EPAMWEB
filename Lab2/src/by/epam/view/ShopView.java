@@ -6,6 +6,7 @@ import by.epam.service.ShopService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -18,6 +19,7 @@ public class ShopView {
     private final int MENU_DELETE = 4;
 
     private ShopService shopService;
+    Logger log = LogManager.getLogger();
 
     public ShopView() {
         shopService = new ShopService();
@@ -97,12 +99,11 @@ public class ShopView {
     }
 
     private boolean readShop(int id) {
-        Logger log = LogManager.getLogger();
         try {
             Shop shop = shopService.readShop(id);
             System.out.println(shop.toStringFile());
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error(String.format("Ошибка %s", e.getMessage()));
             return false;
         }
@@ -119,13 +120,17 @@ public class ShopView {
     }
 
     private void readAllShops() {
-        Logger log = LogManager.getLogger();
-        ArrayList<Shop> shops = shopService.readAll();
-        for (Shop shop : shops
-        ) {
-            System.out.println(shop.toStringFile());
+        try {
+            Logger log = LogManager.getLogger();
+            ArrayList<Shop> shops = shopService.readAll();
+            for (Shop shop : shops
+            ) {
+                System.out.println(shop.toStringFile());
+            }
+            log.info("Shop list reviewed");
+        } catch (SQLException e){
+            log.error(e.getMessage());
         }
-        log.info("Shop list reviewed");
     }
 
     public int readerInt() {

@@ -1,56 +1,63 @@
 package by.epam.dao;
 
 import by.epam.Utility;
+import by.epam.entities.Car;
+import by.epam.entities.CarPart;
 import by.epam.entities.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class UserDao {
     private ObjectOutputStream outputStream;
     Logger log = LogManager.getLogger();
+    Connection connection = null;
+
+    public UserDao() {
+        try {
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
+            log.info("Connection succesfull");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public void create(User user) {
-        Logger log = LogManager.getLogger();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(Utility.userData, true))) {
-            writer.write(user.toStringFile());
-            writer.newLine();
-            log.info("User Created");
-        } catch (IOException ignored) {
-            log.error("Creation error");
+        String insert_new = "INSERT INTO USERS VALUES(?,?,?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
+            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setBoolean(2, user.getisAdmin());
+            preparedStatement.setString(3, user.getUsername());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.execute();
+            log.info("User created succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
     }
 
-    public ArrayList<User> readAll() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(Utility.userData))) {
+    public ArrayList<User> readAll() throws SQLException {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT ID, ADMIN, USERNAME, PASSWORD FROM USERS");
             ArrayList<User> users = new ArrayList<>();
-            String buffer;
-            while ((buffer = reader.readLine()) != null) {
-                users.add(userTokenizer(buffer));
+            while (resultSet.next()) {
+                users.add(userFromResultSet(resultSet));
             }
             return users;
-        } catch (IOException e) {
+        } catch (SQLException e) {
             log.error(e.getMessage());
-        }
-        return null;
-    }
-
-
-    public void writeAll(ArrayList<User> users) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(Utility.userData)))) {
-            for (User user : users) {
-                writer.write(user.toStringFile());
-                writer.write("\n");
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
+            throw e;
         }
     }
 
-    public int getMaxId() {
+    public int getMaxId() throws SQLException {
         ArrayList<User> users = readAll();
         int result = 0;
         for (User user : users) {
@@ -61,20 +68,22 @@ public class UserDao {
         return result;
     }
 
-    public void Update(int id, User newUser) {
-        ArrayList<User> users = readAll();
-        for (User user : users) {
-            if (id == user.getId()) {
-                user.setisAdmin(newUser.getisAdmin());
-                user.setPassword(newUser.getPassword());
-                user.setUsername(newUser.getUsername());
-                break;
-            }
+    public void Update(int id, User user) throws SQLException {
+        String update = "UPDATE USERS SET ADMIN = ?, USERNAME = ?, PASSWORD = ? WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(update);
+            preparedStatement.setBoolean(1, user.getisAdmin());
+            preparedStatement.setString(2, user.getUsername());
+            preparedStatement.setString(3, user.getPassword());
+            preparedStatement.setInt(4, id);
+            preparedStatement.execute();
+            log.info("User updated succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        writeAll(users);
     }
 
-    public User readUser(int id) {
+    public User readUser(int id) throws SQLException {
         ArrayList<User> users = readAll();
         for (User user : users) {
             if (id == user.getId()) {
@@ -85,23 +94,22 @@ public class UserDao {
     }
 
     public void delete(int id) {
-        ArrayList<User> users = readAll();
-        for (User user : users) {
-            if (id == user.getId()) {
-                users.remove(user);
-                writeAll(users);
-                return;
-            }
+        String delete = "DELETE FROM USERS WHERE ID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(delete);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            log.info("User deleted succesfully");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        throw new IllegalArgumentException(String.format("Id %d не найден", id));
     }
 
-    public User userTokenizer(String buffer){
-        StringTokenizer st = new StringTokenizer(buffer, "-");
-        int id = Integer.parseInt(st.nextToken());
-        boolean isAdmin = Boolean.parseBoolean(st.nextToken());
-        String username = st.nextToken();
-        String password = st.nextToken();
-        return new User(id, isAdmin,username,password);
+    private User userFromResultSet(ResultSet input) throws SQLException {
+        return new User(
+                input.getInt(1),
+                Boolean.parseBoolean(input.getString(2)),
+                input.getString(3),
+                input.getString(4));
     }
 }

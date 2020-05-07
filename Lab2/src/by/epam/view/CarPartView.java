@@ -3,6 +3,7 @@ package by.epam.view;
 import by.epam.entities.CarPart;
 import by.epam.service.CarPartService;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -108,10 +109,14 @@ public class CarPartView {
     }
 
     private void readAllCarParts() {
-        ArrayList<CarPart> carParts = carPartService.readAll();
-        for (CarPart carPart : carParts
-        ) {
-            System.out.println(carPart.toStringFile());
+        try {
+            ArrayList<CarPart> carParts = carPartService.readAll();
+            for (CarPart carPart : carParts
+            ) {
+                System.out.println(carPart.toStringFile());
+            }
+        } catch (SQLException e){
+            System.out.println(String.format("Ошибка %s", e.getMessage()));
         }
     }
 

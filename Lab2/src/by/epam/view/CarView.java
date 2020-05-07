@@ -6,6 +6,7 @@ import by.epam.service.CarService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -18,6 +19,7 @@ public class CarView {
     private final int MENU_DELETE = 4;
 
     private CarService carService;
+    Logger log = LogManager.getLogger();
 
     public CarView() {
         carService = new CarService();
@@ -49,20 +51,25 @@ public class CarView {
     }
 
     private void deleteCar() {
-        System.out.println("Введите номер удаляемого автомобиля:");
-        int id = readerInt();
-        System.out.println("Введите название удаляемого автомобиля:");
-        String brand = readerString();
-        carService.delete(id, brand);
+        try {
+            System.out.println("Введите номер удаляемого автомобиля:");
+            int id = readerInt();
+            System.out.println("Введите название удаляемого автомобиля:");
+            String brand = readerString();
+            carService.delete(id, brand);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
     }
 
     private void updateCar() {
-        System.out.println("Введите номер изменяемого автомобиля:");
-        int id = readerInt();
-        if (!readCar(id)) {
-            return;
-        }
-        try {
+        try{
+            System.out.println("Введите номер изменяемого автомобиля:");
+            int id = readerInt();
+            if (!readCar(id)) {
+                return;
+            }
             System.out.println("Введите новые данные автомобиля в формате Марка-Модель:");
             String buffer = readerString();
             StringTokenizer st = new StringTokenizer(buffer, Utility.valueSeparator);
@@ -70,28 +77,21 @@ public class CarView {
             String model = st.nextToken();
             Car car = new Car(id, brand, model);
             carService.update(id, car);
-        } catch (Exception e) {
-            System.out.println("Неверные данные");
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
         }
-
     }
 
     private void createCar() {
-        try {
-            System.out.println("Введите данные нового автомобиля в формате Марка-Модель:");
-            String buffer = readerString();
-            StringTokenizer st = new StringTokenizer(buffer, "-");
-            String brand = st.nextToken();
-            String model = st.nextToken();
-            carService.create(new Car(0, brand,model));
-        }
-        catch (Exception e){
-            System.out.println("Неправильный ввод данных");
-        }
+        System.out.println("Введите данные нового автомобиля в формате Марка-Модель:");
+        String buffer = readerString();
+        StringTokenizer st = new StringTokenizer(buffer, "-");
+        String brand = st.nextToken();
+        String model = st.nextToken();
+        carService.create(new Car(0, brand, model));
     }
 
     private boolean readCar(int id) {
-        Logger log = LogManager.getLogger();
         try {
             Car car = carService.readCar(id);
             System.out.println(car.toStringFile());
@@ -113,13 +113,16 @@ public class CarView {
     }
 
     private void readAllCars() {
-        Logger log = LogManager.getLogger();
-        ArrayList<Car> cars = carService.readAll();
-        for (Car car : cars
-        ) {
-            System.out.println(car.toStringFile());
+        try {
+            ArrayList<Car> cars = carService.readAll();
+            for (Car car : cars
+            ) {
+                System.out.println(car.toStringFile());
+            }
+            log.info("Car list reviewed");
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        log.info("Car list reviewed");
     }
 
     public int readerInt() {

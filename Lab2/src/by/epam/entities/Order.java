@@ -9,8 +9,18 @@ public class Order extends OrderData {
     private CarPart carPart;
     private Shop shop;
 
-    public Order(int id, int carPartId, int shopId, String dateString) throws ParseException {
-        super(id, carPartId, shopId, dateString);
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    private User user;
+
+    public Order(int id, int carPartId, int shopId, int userId, Date date) throws ParseException {
+        super(id, carPartId, shopId, userId, date);
     }
 
     public CarPart getCarPart() {
