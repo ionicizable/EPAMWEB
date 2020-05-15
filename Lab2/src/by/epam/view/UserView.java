@@ -16,6 +16,7 @@ public class UserView {
     private final int MENU_CREATE = 2;
     private final int MENU_UPDATE = 3;
     private final int MENU_DELETE = 4;
+    private final int MENU_RETURN = 0;
 
     private UserService userService;
 
@@ -30,6 +31,8 @@ public class UserView {
                 showMenu();
                 int check = readerInt();
                 switch (check) {
+                    case (MENU_RETURN):
+                        return;
                     case (MENU_READ_ALL):
                         readAll();
                         break;
@@ -122,6 +125,7 @@ public class UserView {
     }
 
     private void showMenu() {
+        System.out.println(String.format("Введите %d чтобы выйти", MENU_RETURN));
         System.out.println(String.format("Введите %d  чтобы показать всех пользователей", MENU_READ_ALL));
         System.out.println(String.format("Введите %d  создать нового пользователя", MENU_CREATE));
         System.out.println(String.format("Введите %d  чтобы изменить пользователя", MENU_UPDATE));

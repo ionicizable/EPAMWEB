@@ -1,5 +1,6 @@
 package by.epam.dao;
 
+import by.epam.Connections;
 import by.epam.entities.CarPart;
 import by.epam.entities.Shop;
 import by.epam.Utility;
@@ -12,23 +13,15 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class ShopDao {
-    //private ObjectOutputStream outputStream;
     Logger log = LogManager.getLogger();
-    Connection connection = null;
 
     public ShopDao() {
-        try {
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
-            log.info("Connection succesfull");
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public void create(Shop shop) {
         String insert_new = "INSERT INTO SHOPS VALUES(?,?,?,?,?,?)";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
             preparedStatement.setInt(1, shop.getId());
             preparedStatement.setString(2, shop.getName());
@@ -45,6 +38,7 @@ public class ShopDao {
 
     public ArrayList<Shop> readAll() throws SQLException {
         try {
+            Connection connection = Connections.get();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT ID, NAME, ADDRESS, CONTACT, WORKTIME, DESCRIPTION FROM SHOPS");
             ArrayList<Shop> shops = new ArrayList<>();
@@ -72,6 +66,7 @@ public class ShopDao {
     public void update(int id, Shop shop) {
         String update = "UPDATE SHOPS SET NAME = ?, ADDRESS = ?, CONTACT = ?, WORKTIME = ?, DESCRIPTION = ? WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(update);
             preparedStatement.setString(1, shop.getName());
             preparedStatement.setString(2, shop.getAddress());
@@ -100,6 +95,7 @@ public class ShopDao {
     public void delete(int id) {
         String delete = "DELETE FROM SHOPS WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(delete);
             preparedStatement.setInt(1, id);
             preparedStatement.execute();

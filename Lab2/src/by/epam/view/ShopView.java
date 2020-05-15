@@ -17,6 +17,7 @@ public class ShopView {
     private final int MENU_CREATE = 2;
     private final int MENU_UPDATE = 3;
     private final int MENU_DELETE = 4;
+    private final int MENU_RETURN = 0;
 
     private ShopService shopService;
     Logger log = LogManager.getLogger();
@@ -45,6 +46,9 @@ public class ShopView {
             if (check == MENU_DELETE && isAdmin) {
                 deleteShop();
                 continue;
+            }
+            if (check == MENU_RETURN){
+                return;
             }
             System.out.println("Нет такого пункта");
         }
@@ -111,6 +115,7 @@ public class ShopView {
 
 
     private void showMenu(boolean isAdmin) {
+        System.out.println(String.format("Введите %d чтобы выйти", MENU_RETURN));
         System.out.println(String.format("Введите %d  чтобы показать все магазины", MENU_READ_ALL));
         if (isAdmin) {
             System.out.println(String.format("Введите %d  чтобы создать новый магазин", MENU_CREATE));

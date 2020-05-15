@@ -20,6 +20,7 @@ public class OrderView {
     private final int MENU_READ_ALL = 2;
     private final int MENU_CREATE = 1;
     private final int MENU_DELETE = 3;
+    private final int MENU_RETURN = 0;
 
     private OrderService orderService;
     private CarPartService carPartService;
@@ -41,6 +42,9 @@ public class OrderView {
         while (true) {
             showMenu(isAdmin);
             int check = readerInt();
+            if (check == MENU_RETURN){
+                return;
+            }
             if (check == MENU_READ_ALL && isAdmin) {
                 readAllOrders();
                 continue;
@@ -106,6 +110,7 @@ public class OrderView {
 
 
     private void showMenu(boolean isAdmin) {
+        System.out.println(String.format("Введите %d чтобы выйти", MENU_RETURN));
         System.out.println(String.format("Введите %d  чтобы создать новый заказ", MENU_CREATE));
         if (isAdmin) {
             System.out.println(String.format("Введите %d  чтобы показать все заказы", MENU_READ_ALL));

@@ -17,6 +17,7 @@ public class CarView {
     private final int MENU_CREATE = 2;
     private final int MENU_UPDATE = 3;
     private final int MENU_DELETE = 4;
+    private final int MENU_RETURN = 0;
 
     private CarService carService;
     Logger log = LogManager.getLogger();
@@ -30,6 +31,9 @@ public class CarView {
         while (true) {
             showMenu(isAdmin);
             int check = readerInt();
+            if (check == MENU_RETURN){
+                return;
+            }
             if (check == MENU_READ_ALL) {
                 readAllCars();
                 continue;
@@ -104,6 +108,7 @@ public class CarView {
 
 
     private void showMenu(boolean isAdmin) {
+        System.out.println(String.format("Введите %d чтобы выйти", MENU_RETURN));
         System.out.println(String.format("Введите %d  чтобы показать все автомобили", MENU_READ_ALL));
         if (isAdmin) {
             System.out.println(String.format("Введите %d  чтобы создать новый автомобиль", MENU_CREATE));

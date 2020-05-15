@@ -1,5 +1,6 @@
 package by.epam.dao;
 
+import by.epam.Connections;
 import by.epam.entities.CarPart;
 import by.epam.Utility;
 import org.apache.logging.log4j.LogManager;
@@ -13,21 +14,14 @@ import java.util.StringTokenizer;
 public class CarPartDao {
     //private ObjectOutputStream outputStream;
     Logger log = LogManager.getLogger();
-    Connection connection = null;
 
     public CarPartDao() {
-        try {
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
-            log.info("Connection succesfull");
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public void create(CarPart carPart) {
         String insert_new = "INSERT INTO CARPARTS VALUES(?,?,?,?)";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
             preparedStatement.setInt(1, carPart.getId());
             preparedStatement.setString(2, carPart.getName());
@@ -35,6 +29,7 @@ public class CarPartDao {
             preparedStatement.setString(4, carPart.getCarId());
             preparedStatement.execute();
             log.info("Part created succesfully");
+            Connections.putBack(connection);
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
@@ -42,12 +37,14 @@ public class CarPartDao {
 
     public ArrayList<CarPart> readAll() throws SQLException {
         try {
+            Connection connection = Connections.get();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT ID, NAME, DESCRIPTION, CARID FROM CARPARTS");
             ArrayList<CarPart> carParts = new ArrayList<>();
             while (resultSet.next()) {
                 carParts.add(carPartFromResultSet(resultSet));
             }
+            Connections.putBack(connection);
             return carParts;
         } catch (SQLException e) {
             log.error(e.getMessage());
@@ -69,6 +66,7 @@ public class CarPartDao {
     public void update(int id, CarPart carPart) {
         String update = "UPDATE CARPARTS SET NAME = ?, DESCRIPTION = ?, CARID=? WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(update);
             preparedStatement.setString(1, carPart.getName());
             preparedStatement.setString(2, carPart.getDescription());
@@ -76,6 +74,7 @@ public class CarPartDao {
             preparedStatement.setInt(4, id);
             preparedStatement.execute();
             log.info("Part updated succesfully");
+            Connections.putBack(connection);
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
@@ -95,10 +94,12 @@ public class CarPartDao {
     public void delete(int id) {
         String update = "DELETE FROM CARPARTS WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(update);
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
             log.info("Part deleted succesfully");
+            Connections.putBack(connection);
         } catch (SQLException e) {
             log.error(e.getMessage());
         }

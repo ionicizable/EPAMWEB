@@ -1,5 +1,6 @@
 package by.epam.dao;
 
+import by.epam.Connections;
 import by.epam.entities.Order;
 import by.epam.entities.OrderData;
 import org.apache.logging.log4j.LogManager;
@@ -10,21 +11,15 @@ import java.util.ArrayList;
 
 public class OrderDao {
     Logger log = LogManager.getLogger();
-    Connection connection = null;
 
     public OrderDao() {
-        try {
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
-            log.info("Connection succesfull");
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public void create(Order order) {
         String insert_new = "INSERT INTO ORDERS VALUES(?,?,?,?,?)";
-        try { java.sql.Date sqlDate = new java.sql.Date(order.getDate().getTime());
+        try {
+            Connection connection = Connections.get();
+            java.sql.Date sqlDate = new java.sql.Date(order.getDate().getTime());
             PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
             preparedStatement.setInt(1, order.getId());
             preparedStatement.setDate(2, sqlDate);
@@ -40,6 +35,7 @@ public class OrderDao {
 
     public ArrayList<OrderData> readAll() throws SQLException {
         try {
+            Connection connection = Connections.get();
             Statement statement = connection.createStatement();
             ResultSet resultSet =
                     statement.executeQuery("SELECT ID, ORDERDATE, CARPARTID, SHOPID, USERID FROM ORDERS");
@@ -78,6 +74,7 @@ public class OrderDao {
     public void delete(int id) {
         String update = "DELETE FROM ORDERS WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(update);
             preparedStatement.setInt(1, id);
             preparedStatement.execute();

@@ -1,8 +1,6 @@
 package by.epam.dao;
 
-import by.epam.Utility;
-import by.epam.entities.Car;
-import by.epam.entities.CarPart;
+import by.epam.Connections;
 import by.epam.entities.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,26 +8,17 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 public class UserDao {
-    private ObjectOutputStream outputStream;
     Logger log = LogManager.getLogger();
-    Connection connection = null;
 
     public UserDao() {
-        try {
-            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "PARTSHOP", "oracle");
-            log.info("Connection succesfull");
-        } catch (SQLException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public void create(User user) {
         String insert_new = "INSERT INTO USERS VALUES(?,?,?,?)";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(insert_new);
             preparedStatement.setInt(1, user.getId());
             preparedStatement.setBoolean(2, user.getisAdmin());
@@ -44,6 +33,7 @@ public class UserDao {
 
     public ArrayList<User> readAll() throws SQLException {
         try {
+            Connection connection = Connections.get();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT ID, ADMIN, USERNAME, PASSWORD FROM USERS");
             ArrayList<User> users = new ArrayList<>();
@@ -71,6 +61,7 @@ public class UserDao {
     public void Update(int id, User user) throws SQLException {
         String update = "UPDATE USERS SET ADMIN = ?, USERNAME = ?, PASSWORD = ? WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(update);
             preparedStatement.setBoolean(1, user.getisAdmin());
             preparedStatement.setString(2, user.getUsername());
@@ -96,6 +87,7 @@ public class UserDao {
     public void delete(int id) {
         String delete = "DELETE FROM USERS WHERE ID = ?";
         try {
+            Connection connection = Connections.get();
             PreparedStatement preparedStatement = connection.prepareStatement(delete);
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
